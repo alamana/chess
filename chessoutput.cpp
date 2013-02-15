@@ -13,6 +13,17 @@ void printBoard(int* board, int location, set<int> possibles) {
     string selectcolor = "\e[0;44m"; // blue
     string possiblecolor = "\e[0;46m"; // cyan
     string normal = "\e[0m";
+//    4 RNKNR   4 UBQUB   4 *****   4 *****   4 *****   
+//    3 PPPPP   3 PPPPP   3 *****   3 *****   3 *****   
+//    2 *****   2 *****   2 *****   2 *****   2 *****   
+//    1 *****   1 *****   1 *****   1 PPPPP   1 PPPPP   
+//    0 *****   0 *****   0 *****   0 BUQBU   0 RNKNR   
+//      abcde     abcde     abcde     abcde     abcde
+//	  E         D         C         B         A  
+
+//  01234 is the y coordinate, abcde is the x coordinate, ABCDE is the b coordinate
+//  print by x, then b, then y.
+
     for (int y=4; y>=0; y--) {
 	cout << "   ";
 	for (int b=4; b>=0; b--) {

@@ -12,6 +12,12 @@ void moveto(int*, int, int, int);
 bool inCheck = false;
 
 int main() {
+    // Standard starting board.
+    // 1 = Pawn		5 = Unicorn
+    // 2 = Rook		6 = King
+    // 3 = Knight	7 = Queen
+    // 4 = Bishop	0 = Empty
+    // #+8 = Black pieces.
     int board[] = {
 	2, 3, 7, 3, 2,
 	1, 1, 1, 1, 1,
@@ -55,6 +61,8 @@ int main() {
     int save  = -1;
     int color = 1;
     bool error = false;
+    bool whuman = true;
+    bool bhuman = true;
 
     while (true) {
 	set<int> posmoves = getPossibleMoves(board, loc);
@@ -92,6 +100,7 @@ int main() {
 		    moveto(board, save, loc, color);
 		    loc = -1;
 		    save = -1;
+		    //switches color between 9 and 1
 		    color = 9^1^color;
 		}
 		break;
@@ -103,6 +112,7 @@ int main() {
 }
 
 int parseInput (string input) {
+    // Tests every possible combination of letters and checks for validity
     if (input.size() < 3) return -1;
     int b = input[0]-65;
     int y = input[1]-48; //012

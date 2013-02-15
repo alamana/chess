@@ -28,7 +28,7 @@ set<int> getPossibleMoves(int* board, int loc) {
 
 set<int> getPawnMoves(int* board, int loc) {
     set<int> moves;
-    cout << "**" << loc << endl;
+    //cout << "**" << loc << endl;
     int sign = 1;
     int movelist[][3] = {
 	{1, 0, 0},
@@ -44,7 +44,7 @@ set<int> getPawnMoves(int* board, int loc) {
     if (board[loc] > 8) sign = -1;
     for (int i=0; i<2; i++) {
 	int l = locAdd(loc, sign*movelist[i][0], sign*movelist[i][1], movelist[i][2]);
-	if (l!=-1 && opponents(board[l], board[loc]) != 0) moves.insert(l);
+	if (l!=-1 && opponents(board[l], board[loc]) == -1) moves.insert(l);
     }
     for (int i=0; i<5; i++) {
 	int l = locAdd(loc, sign*takelist[i][0], sign*takelist[i][1], takelist[i][2]);

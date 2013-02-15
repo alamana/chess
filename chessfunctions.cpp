@@ -2,8 +2,10 @@
 
 using namespace std;
 
+// Converts byx coordinates into a integer location
 int ind(int b, int y, int x) { return b*25+y*5+x; }
 
+// Adds byx to an integer location, returns -1 if invalid.
 int locAdd(int loc, int b, int y, int x) {
     int bcur = loc/25;
     int ycur = (loc/5)%5;
