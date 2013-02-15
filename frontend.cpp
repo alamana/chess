@@ -180,12 +180,4 @@ void moveto(int* board, int from, int to, int color) {
 	    }
 	    i++;
     }
-
-
-    set<int> posmoves = getPossibleMoves(board, to);
-    set<int>::iterator positr; 
-    if (color == 1) positr = posmoves.find(bkloc);
-    else positr = posmoves.find(wkloc);
-
-    if (positr != posmoves.end()) inCheck = true;
 }
