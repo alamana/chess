@@ -16,6 +16,7 @@ bitboard bitboard::U(bitboard* board){
 		if (boardarray[i] == true || 
 				board->boardarray[i] == true){
 			ret.boardarray[i] = true;
+			ret.size++;
 		}
 	}
 	return ret;
@@ -24,8 +25,9 @@ bitboard bitboard::U(bitboard* board){
 bitboard bitboard::I(bitboard* board){
 	bitboard ret;
 	for (int i = 0; i < BOARD_SIZE; i++){
-		if (boardarray[i] == board->boardarray[i]){
-			ret.boardarray[i] = boardarray[i];
+		if (boardarray[i] == board->boardarray[i] && boardarray[i] == true){
+			ret.boardarray[i] = true;
+			ret.size++;
 		}
 	}
 	return ret;
@@ -33,6 +35,8 @@ bitboard bitboard::I(bitboard* board){
 
 void bitboard::flip(int index){
 	boardarray[index] = !boardarray[index];
+	if (boardarray[index]) size++;
+	else size--;
 }
 
 void bitboard::set(int index, bool val){
