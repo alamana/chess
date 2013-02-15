@@ -4,14 +4,14 @@
 class bitboard {
 	public:
 		bitboard();
-		bitboard(bitboard* board);
-		bitboard(unsigned int val);
 		bitboard U(bitboard* board); 
-		bitboard intersect(bitboard* board);
+		bitboard I(bitboard* board);
 		void flip(int n);
+		void set(int index, bool val);
 		bool empty();
-		int getSum();
-		int getBit(int n);
-		unsigned int boardvalue;
+		bool eq(bitboard* board);
+		int getBool(int n);
+		bool boardarray[];
+		int size;
 };
 #endif
