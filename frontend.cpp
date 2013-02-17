@@ -59,7 +59,8 @@ int main() {
     int loc   = -1;
     int state =  0;
     int save  = -1;
-    int color = 1;
+    int color = 1; // 1 is white, 9 is black, to exploit the way
+		   // the opponents function works
     bool error = false;
     bool whuman = true;
     bool bhuman = true;
