@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include <iterator>
 #include "chessoutput.h"
 #include "chessmove.h"
+#include "bitboard.h"
 
 using namespace std;
 
@@ -147,6 +149,7 @@ int parseInput (string input) {
     return n;
 }
 
+// starting positions
 int bkloc = 122;
 int wkloc = 3;
 
@@ -154,14 +157,28 @@ void moveto(int* board, int from, int to, int color) {
     board[to] = board[from];
     board[from] = 0;
 
+    // see if a king was moved
     if (from == bkloc) bkloc = to;
     if (from == wkloc) wkloc = to;
     
-    // need to change so it doesn't include movelist
-    set<int> posmoves = getPossibleMoves(board, to);
-    set<int>::iterator positr; 
-    if (color == 1) positr = posmoves.find(bkloc);
-    else positr = posmoves.find(wkloc);
-
-    if (positr != posmoves.end()) inCheck = true;
+ 
+    int kingloc = bkloc;
+    if (color == 1) kingloc = wkloc;
+    int upper = 7;
+    int lower = 1;
+    if (board[to] > 8){ upper = 15; lower = 9;}
+    bool inCheck = false;
+    int i = 0;
+    while (!inCheck && i < 125){
+	    if (board[i] >= lower && board[i] <= upper){
+	    	set<int> posmoves = getPossibleMoves(board, i);
+		if (!posmoves.empty()){
+			for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
+				int elem = *i;
+				if (elem == kingloc) inCheck = true;				
+			}	
+		}
+	    }
+	    i++;
+    }
 }
