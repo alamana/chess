@@ -1,7 +1,7 @@
 #ifndef GREEDYAI_H
 #define GREEDYAI_H
 
-#include "bitboard.h"
+#include "AI/bitboard.h"
 #include <string>
 
 class greedyai {
