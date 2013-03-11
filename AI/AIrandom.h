@@ -6,7 +6,9 @@
 class AIrandom : public AIgeneric {
     public:
 	AIrandom();
-	int getNextMove(int*, const int &);
+	virtual int getNextMove(int*, const int &);
+    private:
+	int marker;
 };
 
 

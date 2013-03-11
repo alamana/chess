@@ -4,6 +4,8 @@
 class AIgeneric {
     public:
 	virtual int getNextMove(int*, const int &) = 0;
+    private:
+	int marker;
 };
 
 #endif

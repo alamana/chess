@@ -2,6 +2,8 @@
 #define CHESSAI_H
 #include <iostream>
 #include <string>
+#include <vector>
+#include <memory>
 #include "AIgeneric.h"
 
 using namespace std;
@@ -12,9 +14,8 @@ class chessAI {
 	void setAI();
 	int getNextMove(int*, const int &);
     private:
-	AIgeneric ** AIlist;
-	string *names;
-	int length;
+	vector<AIgeneric*> AIlist;
+	vector<string> names;
 	int selectedAI;
 };
 
