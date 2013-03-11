@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void printBoard(int* board, int location, set<int> possibles) {
+void printBoard(const int* board, const int & location, const set<int> & possibles) {
     string background = "\e[0;43m"; //yellow
     string black = "\e[1;30m";
     string white = "\e[1;37m";

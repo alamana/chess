@@ -2,7 +2,7 @@
 #include <iostream>
 #include "chessmove.h"
 
-set<int> getPossibleMoves(int* board, int loc) {
+set<int> getPossibleMoves(int* board, const int & loc) {
     int pos = board[loc];
     if (pos > 8)  pos -= 8;
     switch ( pos ) {
@@ -26,7 +26,7 @@ set<int> getPossibleMoves(int* board, int loc) {
     return set<int>();
 }
 
-set<int> getPawnMoves(int* board, int loc) {
+set<int> getPawnMoves(int* board, const int & loc) {
     set<int> moves;
     //cout << "**" << loc << endl;
     int sign = 1;
@@ -54,7 +54,7 @@ set<int> getPawnMoves(int* board, int loc) {
     return moves;
 }
 
-set<int> getRookMoves(int* board, int loc) {
+set<int> getRookMoves(int* board, const int & loc) {
     set<int> moves;
     for (int s=-1; s<2; s+=2) {
 	for (int i=0; i<3; i++) {
@@ -74,7 +74,7 @@ set<int> getRookMoves(int* board, int loc) {
     return moves;
 }
 
-set<int> getKnightMoves(int* board, int loc) {
+set<int> getKnightMoves(int* board, const int & loc) {
     set<int> moves;
     int movelist[][3] = {
 	{0, 1, 2},
@@ -104,7 +104,7 @@ set<int> getKnightMoves(int* board, int loc) {
     return moves;
 }
 
-set<int> getBishopMoves(int* board, int loc) {
+set<int> getBishopMoves(int* board, const int & loc) {
     set<int> moves;
     int movelist[][3] = {
 	{1, 1, 0},
@@ -134,7 +134,7 @@ set<int> getBishopMoves(int* board, int loc) {
 }
 
 
-set<int> getUnicornMoves(int* board, int loc) {
+set<int> getUnicornMoves(int* board, const int & loc) {
     set<int> moves;
     int movelist[][3] = {
 	{1, 1, 1},
@@ -161,7 +161,7 @@ set<int> getUnicornMoves(int* board, int loc) {
 }
 
 
-set<int> getQueenMoves(int* board, int loc) {
+set<int> getQueenMoves(int* board, const int & loc) {
     set<int> r = getRookMoves(board, loc);
     set<int> b = getBishopMoves(board, loc);
     set<int> u = getUnicornMoves(board, loc);
@@ -175,7 +175,7 @@ set<int> getQueenMoves(int* board, int loc) {
     return r;
 }
 
-set<int> getKingMoves(int* board, int loc) {
+set<int> getKingMoves(int* board, const int & loc) {
     set<int> moves;
     for (int s=-1; s<2; s+=2) {
 	for (int i=0; i<3; i++) {

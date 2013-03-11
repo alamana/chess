@@ -1,10 +1,14 @@
 #ifndef AIRANDOM_H
 #define AIRANDOM_H
+#include "chessmove.h"
+#include "AIgeneric.h"
 
-class AIrandom {
+class AIrandom : public AIgeneric {
     public:
 	AIrandom();
-	int getNextMove(int*, int);
-}
+	int getNextMove(int*, const int &);
+};
+
+
 
 #endif

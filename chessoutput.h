@@ -1,11 +1,11 @@
-#include <set>
-#include "chessfunctions.h"
-
-using namespace std;
-
 #ifndef CHESSOUTPUT_H
 #define CHESSOUTPUT_H
 
-void printBoard(int*, int, set<int>);
+#include <set>
+#include "AI/chessfunctions.h"
+
+using namespace std;
+
+void printBoard(const int*, const int &, const set<int> &);
 
 #endif

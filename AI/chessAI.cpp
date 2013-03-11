@@ -1,38 +1,44 @@
 #include <iostream>
+#include <stdlib.h>
 #include "chessAI.h"
 #include "AIrandom.h"
 
-using namespace std;
 
 chessAI::chessAI () {
     length = 1; // Remember to change this!
-    int (*templist[length])(int *, int);
-    string tempnames[length];
+    AIlist = new AIgeneric * [length];
+    names = new string[length];
     
     // SET AIs HERE
     // Random AI
     AIrandom randomAI;
-    templist[0] = &(randomAI.getNextMove);
-    tempnames[0] = "Random AI";
+    AIlist[0] = & (randomAI);
+    names[0] = "Random AI";
 
     // FIN
-    AIlist = templist;
-    names = tempnames;
     selectedAI = -1;
 }
 
-void setAI() {
-    int x = -1;
-    while (x <0 || x >= length) {
-	cout << "Select an AI: " << endl;
-	for (int i=0; i<length; i++)
-	    cout << i << ".\t"<<names[i]<<endl;
-	cin >> x;
-	cout << "\n\n\n";
-    }
-    selectedAI = x;
+chessAI::~chessAI() {
+    for (int i=0; i<length; i++) delete AIlist[i];
 }
 
-int getNextMove() {
-    return AIlist[selectedAI]();
+void chessAI::setAI() {
+    int x = -1;
+    string temp;
+    while (x < 1 || x > length) {
+	cout << "AI list:" << endl;
+	for (int i=0; i<length; i++)
+	    cout << i+1 << ".\t"<<names[i]<<endl;
+	cout << "Select an AI: ";
+	cin >> temp;
+	x=atoi(temp.c_str());
+	cout << "\n\n\n";
+    }
+    selectedAI = x-1;
+}
+
+int chessAI::getNextMove(int * board, const int & color) {
+    0;
+    return AIlist[selectedAI]->getNextMove(board, color);
 }

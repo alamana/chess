@@ -1,16 +1,18 @@
-#include <iostream>
-#include <string>
-
 #ifndef CHESSAI_H
 #define CHESSAI_H
+#include <iostream>
+#include <string>
+#include "AIgeneric.h"
 
+using namespace std;
 class chessAI {
     public:
 	chessAI();
+	~chessAI();
 	void setAI();
-	int getNextMove();
+	int getNextMove(int*, const int &);
     private:
-	int (**AIlist)(int*, int);
+	AIgeneric ** AIlist;
 	string *names;
 	int length;
 	int selectedAI;

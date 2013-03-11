@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <iterator>
 #include "chessoutput.h"
-#include "chessmove.h"
-#include "bitboard.h"
+#include "AI/chessmove.h"
+#include "AI/chessAI.h"
 
 using namespace std;
 
@@ -67,48 +67,82 @@ int main() {
     bool whuman = true;
     bool bhuman = true;
 
+    // Sets AI
+    chessAI wAI;
+    chessAI bAI;
+
+    char humanity = 0;
+    while (humanity != 'y' && humanity != 'n') {
+	cout << "Is white a human player? (y/n): ";
+	cin >> humanity;
+    }
+    whuman = (humanity=='y') ? true : false;
+    if (!whuman) {
+	cout << "White isn't human!" << endl;
+	wAI.setAI();
+    }
+
+    humanity = 0;
+    while (humanity != 'y' && humanity != 'n') {
+	cout << "Is black a human player? (y/n): ";
+	cin >> humanity;
+    }
+    bhuman = (humanity=='y') ? true : false;
+    if (!bhuman) {
+	cout << "White isn't human!" << endl;
+	bAI.setAI();
+    }
+
+    //Gameloop
     while (true) {
 	set<int> posmoves = getPossibleMoves(board, loc);
-	printBoard(board, loc,posmoves); 
-	cout << "\t" <<(color==1?"WHITE: ":"BLACK: ") << statetext[error?2:state] << ": ";
-	cin >> input;
-	loc = parseInput(input);
-	error = false;
-	switch (state) {
-	    case 0:
-		if (loc == -1 || opponents(color, board[loc]) != 0) {
-		    error = true;
-		}
-		else {
-		    state = 1;
-		    save = loc;
-		}
-		break;
-	    case 1:
-		if (loc == -1) {
-		    error = true;
-		    loc = save;
-		}
-		else if (opponents(color, board[loc]) == 0) {
-		    state = 1;
-		    save = loc;
-		}
-		else if (posmoves.find(loc) == posmoves.end()) {
-		    error = true;
-		    state = 0;
-		    loc = save;
-		}
-		else {
-		    state = 0;
-		    moveto(board, save, loc, color);
-		    loc = -1;
-		    save = -1;
-		    //switches color between 9 and 1
-		    color = 9^1^color;
-		}
-		break;
+	printBoard(board, loc,posmoves);
+	if (color==1 && whuman || color==9 && bhuman) {
+	    cout << "\t" <<(color==1?"WHITE: ":"BLACK: ") << statetext[error?2:state] << ": ";
+	    cin >> input;
+	    loc = parseInput(input);
+	    error = false;
+	    switch (state) {
+		case 0:
+		    if (loc == -1 || opponents(color, board[loc]) != 0) {
+			error = true;
+		    }
+		    else {
+			state = 1;
+			save = loc;
+		    }
+		    break;
+		case 1:
+		    if (loc == -1) {
+			error = true;
+			loc = save;
+		    }
+		    else if (opponents(color, board[loc]) == 0) {
+			state = 1;
+			save = loc;
+		    }
+		    else if (posmoves.find(loc) == posmoves.end()) {
+			error = true;
+			state = 0;
+			loc = save;
+		    }
+		    else {
+			state = 0;
+			moveto(board, save, loc, color);
+			loc = -1;
+			save = -1;
+			//switches color between 9 and 1
+			color = 9^1^color;
+		    }
+		    break;
+	    }
+	    cout << "\n\n\n";
 	}
-	cout << "\n\n\n";
+	else {
+	    int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
+	    moveto(board, computerderp%1000, computerderp/1000, color);
+	    color = 9^1^color;
+	}
     }
     
     return 0;
