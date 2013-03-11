@@ -11,6 +11,8 @@ class greedyai {
 		void setMove();		
 		bool color;
 		int best[2];
+		int getBestFrom();
+		int getBestTo();
 	private:
 		double computeValue(int loc);
 		int* board;

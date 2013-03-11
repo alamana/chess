@@ -63,3 +63,11 @@ void greedyai::setMove(){
 		}
 	}
 }
+
+int greedyai::getBestFrom(){
+	return best[0];
+}
+
+int greedyai::getBestTo(){
+	return best[1];
+}
