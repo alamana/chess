@@ -2,7 +2,10 @@
 #define AIGREEDY_H
 
 #include <string>
+#include <iostream>
 #include "AIgeneric.h"
+
+using namespace std;
 
 class AIgreedy : public AIgeneric {
     public:

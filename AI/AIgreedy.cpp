@@ -6,7 +6,8 @@ AIgreedy::AIgreedy() {
 }
 
 double AIgreedy::computeValue(const int & piece){
-    static int valuelist[] = {0, 1, 5, 3, 4, 6, 10, 8};
+    //			         P   R   B   N   U   Q   K
+    static int valuelist[] = {0, 1 , 5 , 3 , 4 , 6 , 8 , 100};
     return valuelist[piece%8];
 }
 
@@ -14,22 +15,23 @@ int AIgreedy::getNextMove(int *board, const int & color){
     int upper = 15;
     int lower = 9;
     int returnval = -1;
-    int deltaVal = 0;
-    if (color == 9){ upper = 7; lower = 1;}
+    int deltaVal = -10000;
+    if (color == 1){ upper = 7; lower = 1;}
     for (int j = 0; j < 125; j++){
 	if (board[j] >= lower && board[j] <= upper){
 	    int val = computeValue(board[j]);
 	    set<int> posmoves = getPossibleMoves(board, j);
 	    for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
 		int elem = *i;
-		int elemVal = computeValue(elem);
+		int elemVal = computeValue(board[elem]);
 		if ( (elemVal - val) >= deltaVal ){
 		    deltaVal = elemVal - val;
-		    returnval = 1000*j + elem;
+		    returnval = 1000*elem + j;
 		}
 	    }
 	}
     }
+    cout << returnval << endl;
     return returnval;
 }
 
