@@ -11,7 +11,7 @@ double AIgreedy::computeValue(const int & piece){
     return valuelist[piece%8];
 }
 
-int AIgreedy::getNextMove(int *board, const int & color){
+int AIgreedy::getNextMove(const int *board, const int & color){
     int upper = 15;
     int lower = 9;
     int returnval = -1;
@@ -31,8 +31,7 @@ int AIgreedy::getNextMove(int *board, const int & color){
 	    }
 	}
     }
-    cout << returnval << endl;
     return returnval;
 }
 
-int AIgreedy::pawnPromotion(int*, const int &) { return 4; }
+int AIgreedy::pawnPromotion(const int*, const int &) { return 4; }

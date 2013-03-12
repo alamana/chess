@@ -140,6 +140,7 @@ int main() {
 	    if (checkConditions(board, NULL, false)) break;
 	}
 	else {
+	    cout << "\t" <<(color==1?"WHITE ":"BLACK ") << "is a computer, it will move now.\n";
 	    int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
 	    moveto(board, computerderp%1000, computerderp/1000, color);
 	    if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;

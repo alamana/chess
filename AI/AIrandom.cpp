@@ -11,7 +11,7 @@ AIrandom::AIrandom() {
     name = "Random AI";
 }
 
-int AIrandom::getNextMove(int* board, const int & color) {
+int AIrandom::getNextMove(const int* board, const int & color) {
     set<int> posmoves;
     int pieces[20];
     int n;
@@ -31,6 +31,6 @@ int AIrandom::getNextMove(int* board, const int & color) {
     return 1000*(*itr) + pieces[n]; //1000 * MOVETO + MOVEFROM
 }
 	
-int AIrandom::pawnPromotion(int*, const int &) {
+int AIrandom::pawnPromotion(const int*, const int &) {
     return rand()%4;
 }

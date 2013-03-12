@@ -7,8 +7,8 @@ class AIrandom : public AIgeneric {
     public:
 	AIrandom();
 	string name;
-	virtual int getNextMove(int*, const int &);
-	virtual int pawnPromotion(int*, const int &);
+	virtual int getNextMove(const int*, const int &);
+	virtual int pawnPromotion(const int*, const int &);
 };
 
 

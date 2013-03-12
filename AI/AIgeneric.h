@@ -7,8 +7,8 @@ using namespace std;
 
 class AIgeneric {
     public:
-	virtual int getNextMove(int*, const int &) = 0;
-	virtual int pawnPromotion(int*, const int &) = 0;
+	virtual int getNextMove(const int*, const int &) = 0;
+	virtual int pawnPromotion(const int*, const int &) = 0;
 	string name;
 };
 

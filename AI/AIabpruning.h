@@ -1,5 +1,5 @@
-#ifndef AIGREEDY_H
-#define AIGREEDY_H
+#ifndef AIABPRUNING_H
+#define AIABPRUNING_H
 
 #include <string>
 #include <iostream>
@@ -7,14 +7,15 @@
 
 using namespace std;
 
-class AIgreedy : public AIgeneric {
+class AIabpruning : public AIgeneric {
     public:
-	AIgreedy();
+	AIabpruning();
 	string name;
 	virtual int getNextMove(const int*, const int &);
 	virtual int pawnPromotion(const int*, const int &);
     private:
-	double computeValue(const int & loc);
+	double computeValue(const int *, int);
+	double negamax(int *, int, double, double, int, int); 
 };
 
 #endif

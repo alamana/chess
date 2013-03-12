@@ -3,6 +3,7 @@
 #include "chessAI.h"
 #include "AIrandom.h"
 #include "AIgreedy.h"
+#include "AIabpruning.h"
 
 
 chessAI::chessAI () {
@@ -12,9 +13,13 @@ chessAI::chessAI () {
     AIlist.push_back(randomAI);
     names.push_back(randomAI->name);
 
-    AIgreedy * greedyAI= new AIgreedy;
+    AIgreedy * greedyAI = new AIgreedy;
     AIlist.push_back(greedyAI);
     names.push_back(greedyAI->name);
+
+    AIabpruning * abAI = new AIabpruning;
+    AIlist.push_back(abAI);
+    names.push_back(abAI->name);
 
     // FIN
     selectedAI = -1;
