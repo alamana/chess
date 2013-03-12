@@ -7,7 +7,9 @@
 
 using namespace std;
 
-AIrandom::AIrandom() {}
+AIrandom::AIrandom() {
+    name = "Random AI";
+}
 
 int AIrandom::getNextMove(int* board, const int & color) {
     set<int> posmoves;

@@ -2,11 +2,11 @@
 
 using namespace std;
 
-// Converts byx coordinates into a integer location
-int ind(int b, int y, int x) { return b*25+y*5+x; }
+// Converts byx coordinates const into a const integer location
+int ind(const int b, const int y, const int x) { return b*25+y*5+x; }
 
-// Adds byx to an integer location, returns -1 if invalid.
-int locAdd(int loc, int b, int y, int x) {
+// Adds byx to an const integer location, returns -1 if invalid.
+int locAdd(const int loc, const int b, const int y, const int x) {
     int bcur = loc/25;
     int ycur = (loc/5)%5;
     int xcur = loc%5;
@@ -17,7 +17,7 @@ int locAdd(int loc, int b, int y, int x) {
 }
 
 // Return -1 if empty square, 1 if diff color, 0 if same colors
-int opponents(int a, int b) {
+int opponents(const int a, const int b) {
     if (a==0 || b==0) return -1;
     return ((a-8)<0)^((b-8)<0)?1:0; //a and b are diff colors ? 1 : 0;
 }

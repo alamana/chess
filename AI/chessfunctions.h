@@ -1,8 +1,8 @@
 #ifndef CHESSFUNCTIONS_H
 #define CHESSFUNCTIONS_H
 
-int ind(int, int, int);
-int opponents(int, int);
-int locAdd(int, int, int, int);
+int ind(const int, const int, const int);
+int opponents(const int, const int);
+int locAdd(const int, const int, const int, const int);
 
 #endif

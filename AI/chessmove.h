@@ -5,13 +5,13 @@
 #include "chessfunctions.h"
 using namespace std;
 
-set<int> getPossibleMoves(int*, const int &);
-set<int> getPawnMoves(int*, const int &);
-set<int> getRookMoves(int*, const int &);
-set<int> getKnightMoves(int*, const int &);
-set<int> getBishopMoves(int*, const int &);
-set<int> getUnicornMoves(int*, const int &);
-set<int> getQueenMoves(int*, const int &);
-set<int> getKingMoves(int*, const int &);
+set<int> getPossibleMoves(const int*, const int &);
+set<int> getPawnMoves(const int*, const int &);
+set<int> getRookMoves(const int*, const int &);
+set<int> getKnightMoves(const int*, const int &);
+set<int> getBishopMoves(const int*, const int &);
+set<int> getUnicornMoves(const int*, const int &);
+set<int> getQueenMoves(const int*, const int &);
+set<int> getKingMoves(const int*, const int &);
 
 #endif
