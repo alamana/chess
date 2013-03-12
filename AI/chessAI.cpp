@@ -16,14 +16,16 @@ chessAI::chessAI () {
 }
 
 chessAI::~chessAI() {
+    for (int i=AIlist.size()-1; i>=0; i--) delete AIlist[i];
 }
 
 void chessAI::setAI() {
     int x = -1;
     string temp;
-    while (x < 1 || x > AIlist.size()) {
+    int length = AIlist.size();
+    while (x < 1 || x > length) {
 	cout << "AI list:" << endl;
-	for (int i=0; i<AIlist.size(); i++)
+	for (int i=0; i<length; i++)
 	    cout << i+1 << ".\t"<<names[i]<<endl;
 	cout << "Select an AI: ";
 	cin >> temp;
@@ -35,4 +37,8 @@ void chessAI::setAI() {
 
 int chessAI::getNextMove(int * board, const int & color) {
     return AIlist[selectedAI]->getNextMove(board, color);
+}
+
+int chessAI::pawnPromotion(int *board, const int & color) {
+    return AIlist[selectedAI]->pawnPromotion(board, color);
 }

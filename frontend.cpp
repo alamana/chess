@@ -10,6 +10,7 @@ using namespace std;
 
 int parseInput(string);
 void moveto(int*, int, int, int);
+bool checkConditions(int*, chessAI *, bool);
 
 bool inCheck = false;
 
@@ -97,7 +98,7 @@ int main() {
     while (true) {
 	set<int> posmoves = getPossibleMoves(board, loc);
 	printBoard(board, loc,posmoves);
-	if (color==1 && whuman || color==9 && bhuman) {
+	if ((color==1 && whuman) || (color==9 && bhuman)) {
 	    cout << "\t" <<(color==1?"WHITE: ":"BLACK: ") << statetext[error?2:state] << ": ";
 	    cin >> input;
 	    loc = parseInput(input);
@@ -136,14 +137,18 @@ int main() {
 		    }
 		    break;
 	    }
-	    cout << "\n\n\n";
+	    if (checkConditions(board, NULL, false)) break;
 	}
 	else {
 	    int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
 	    moveto(board, computerderp%1000, computerderp/1000, color);
+	    if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
 	    color = 9^1^color;
 	}
+	cout << "\n\n\n";
     }
+    cout << "\n\n";
+    printBoard(board, -1, getPossibleMoves(board, -1));
     
     return 0;
 }
@@ -215,4 +220,44 @@ void moveto(int* board, int from, int to, int color) {
 	    }
 	    i++;
     }
+}
+
+bool checkConditions(int *board, chessAI *AI, const bool nothuman) {
+    //Promote pawn
+    for (int i=0; i<5; i++)
+	if (board[i] == 9) {
+	    int piece=0;
+	    if (nothuman) piece = AI->pawnPromotion(board, 9);
+	    else while (piece < 1 || piece > 4) {
+		cout << "\n\nBlack promotion! What would you like your pawn to become?" << endl;
+		cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
+		cin >> piece;
+	    }
+	    board[i] = piece+1+8;
+	}
+    for (int i=120; i<125; i++)
+	if (board[i] == 1) {
+	    int piece=0;
+	    if (nothuman) piece = AI->pawnPromotion(board, 1);
+	    else while (piece < 1 || piece > 4) {
+		cout << "\n\nWhite promotion! What would you like your pawn to become?" << endl;
+		cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
+		cin >> piece;
+	    }
+	    board[i] = piece+1;
+	}
+
+
+    bool wking = false;
+    bool bking = false;
+    for (int i=0; i<125; i++) {
+	if (board[i] == 7) wking = true;
+	if (board[i] == 15) bking = true;
+    }
+
+    if (!(wking&&bking)) {
+	cout << (wking?"White":"Black") << " wins!" << endl;
+	return true;
+    }
+    return false;
 }

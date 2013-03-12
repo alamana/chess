@@ -10,6 +10,7 @@ void printBoard(const int* board, const int & location, const set<int> & possibl
     string background = "\e[0;43m"; //yellow
     string black = "\e[1;30m";
     string white = "\e[1;37m";
+    string empty = "\e[1;32m";
     string selectcolor = "\e[0;44m"; // blue
     string possiblecolor = "\e[0;46m"; // cyan
     string normal = "\e[0m";
@@ -37,26 +38,9 @@ void printBoard(const int* board, const int & location, const set<int> & possibl
 		    cout << black; loc-=8;
 		}
 		else cout << white;
-		switch ( loc ) {
-		    case 0:
-			cout << '*'; break;
-		    case 1:
-			cout << 'P'; break;
-		    case 2:
-			cout << 'R'; break;
-		    case 3:
-			cout << 'N'; break;
-		    case 4:
-			cout << 'B'; break;
-		    case 5:
-			cout << 'U'; break;
-		    case 6:
-			cout << 'Q'; break;
-		    case 7:
-			cout << 'K'; break;
-		    default:
-			cout << ' '; break;
-		}
+		if (loc == 0) cout << empty;
+		char piecelist[] = {'*', 'P', 'R', 'N', 'B', 'U', 'Q', 'K'};
+		cout << piecelist[loc];
 		cout << normal;
 	    }
 	    cout << "   ";

@@ -7,8 +7,7 @@ class AIrandom : public AIgeneric {
     public:
 	AIrandom();
 	virtual int getNextMove(int*, const int &);
-    private:
-	int marker;
+	virtual int pawnPromotion(int*, const int &);
 };
 
 

@@ -13,6 +13,7 @@ class chessAI {
 	~chessAI();
 	void setAI();
 	int getNextMove(int*, const int &);
+	int pawnPromotion(int *, const int &);
     private:
 	vector<AIgeneric*> AIlist;
 	vector<string> names;
