@@ -4,7 +4,7 @@
 #include "AIrandom.h"
 #include "AIgreedy.h"
 #include "AIabpruning.h"
-
+#include "AInegascout.h"
 
 chessAI::chessAI () {
     // SET AIs HERE
@@ -20,6 +20,10 @@ chessAI::chessAI () {
     AIabpruning * abAI = new AIabpruning;
     AIlist.push_back(abAI);
     names.push_back(abAI->name);
+
+    AInegascout * nsAI = new AInegascout;
+    AIlist.push_back(nsAI);
+    names.push_back(nsAI->name);
 
     // FIN
     selectedAI = -1;
