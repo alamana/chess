@@ -9,7 +9,7 @@
 using namespace std;
 
 int parseInput(string);
-void moveto(int*, int, int, int);
+int moveto(int*, int, int, int, bool);
 bool checkConditions(int*, chessAI *, bool);
 
 bool inCheck = false;
@@ -129,11 +129,15 @@ int main() {
 		    }
 		    else {
 			state = 0;
-			moveto(board, save, loc, color);
+			int result = moveto(board, save, loc, color, inCheck);
+			if (result == -1){ break; }
+			else if (result == 0){ inCheck = false; }
+			else { inCheck = true; }
 			loc = -1;
 			save = -1;
 			//switches color between 9 and 1
 			color = 9^1^color;
+			if (inCheck) cout << "\n \t" << (color==1?"WHITE ":"BLACK ") << "is in check!" << endl;
 		    }
 		    break;
 	    }
@@ -142,7 +146,7 @@ int main() {
 	else {
 	    cout << "\t" <<(color==1?"WHITE ":"BLACK ") << "is a computer, it will move now.\n";
 	    int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
-	    moveto(board, computerderp%1000, computerderp/1000, color);
+	    inCheck = moveto(board, computerderp%1000, computerderp/1000, color, inCheck);
 	    if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
 	    color = 9^1^color;
 	}
@@ -193,34 +197,81 @@ int parseInput (string input) {
 int bkloc = 122;
 int wkloc = 3;
 
-void moveto(int* board, int from, int to, int color) {
-    board[to] = board[from];
-    board[from] = 0;
+// -1 = invalid move, still in check after move
+//  0 = valid move, no check resulting from it
+//  1 = valid move, oppenent is in check from it
 
-    // see if a king was moved
-    if (from == bkloc) bkloc = to;
-    if (from == wkloc) wkloc = to;
-    
- 
-    int kingloc = bkloc;
-    if (color == 1) kingloc = wkloc;
-    int upper = 7;
-    int lower = 1;
-    if (board[to] > 8){ upper = 15; lower = 9;}
-    bool inCheck = false;
-    int i = 0;
-    while (!inCheck && i < 125){
-	    if (board[i] >= lower && board[i] <= upper){
-	    	set<int> posmoves = getPossibleMoves(board, i);
-		if (!posmoves.empty()){
-			for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
-				int elem = *i;
-				if (elem == kingloc) inCheck = true;				
-			}	
+
+int moveto(int* board, int from, int to, int color, bool check) {
+	bool still_in_check = false;
+	if (check){ // simulate move
+		int newboard[125];
+		for (int i = 0; i < 125; i++){
+			newboard[i] = board[i];
 		}
-	    }
-	    i++;
-    }
+		newboard[to] = newboard[from];
+		newboard[from] = 0;
+		
+		int newbkloc = bkloc;
+		int newwkloc = wkloc;
+
+		if (from == newbkloc) newbkloc = to;
+		if (from == newwkloc) newwkloc = to;
+
+		int newkingloc = newbkloc; // color = 9 for black, 1 for white
+		if (color == 1) newkingloc = newwkloc;
+		int upper = 15; 
+		int lower = 9; 
+		if (newboard[to] > 8){ upper = 7; lower = 1; } 
+		for (int i = 0; i < 125; i++){
+			if (still_in_check) { break;}
+			if (newboard[i] >= lower && newboard[i] <= upper){
+				set<int> posmoves = getPossibleMoves(newboard,i);
+				if (!posmoves.empty()){
+					for (set<int>::iterator i = posmoves.begin(); i!= posmoves.end(); i++){
+						int elem = *i;
+						if (elem == newkingloc){ still_in_check = true; break; }
+					}
+				}
+			}
+		}
+
+	}
+	if (!still_in_check){ // make move
+		
+   		board[to] = board[from];
+		board[from] = 0;
+
+		// see if a king was moved
+		if (from == bkloc) bkloc = to;
+		if (from == wkloc) wkloc = to;
+	
+		int kingloc = wkloc;
+		if (color == 1) kingloc = bkloc;
+		int upper = 7;
+		int lower = 1;
+		if (board[to] > 8){ upper = 15; lower = 9;}
+		bool inCheck = false;
+		int i = 0;
+		while (!inCheck && i < 125){
+			if (board[i] >= lower && board[i] <= upper){
+	    			set<int> posmoves = getPossibleMoves(board, i);
+				if (!posmoves.empty()){
+					for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
+						int elem = *i;
+						if (elem == kingloc) inCheck = true;				
+					}	
+				}
+			}
+			i++;
+		}
+		if (inCheck) return 1;
+		else return 0;
+	}
+	else {
+		cout << "\n \t Invalid move! " << (color==1?"WHITE":"BLACK") << " still in check" << endl;
+		return -1;
+	}
 }
 
 bool checkConditions(int *board, chessAI *AI, const bool nothuman) {

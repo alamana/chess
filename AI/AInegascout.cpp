@@ -53,35 +53,6 @@ int AInegascout::getNextMove(const int *board, const int & color){
     return 1000*to[maxind]+from[maxind];
 }
 
-/*
-double AIabpruning::negamax(int * board, int depth, double alpha, double beta, int player, int color) {
-    if (depth == 0) return computeValue(board, color);
-    int from[200], to[200];
-    int len = 0;
-    int upper = 15, lower = 9;
-    if (color == 1) { upper = 7; lower = 1;}
-    for (int i=0; i<125; i++)
-	if (board[i] >= lower && board[i] <= upper) {
-	    set<int> posmoves = getPossibleMoves(board, i);
-	    for (set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); itr++) {
-		if (*itr == -1) continue;
-		from[len] = i;
-		to[len++] = *itr;
-	    }
-	}
-    for (int i=0; i<len; i++) {
-	int newboard[125];
-	for (int k=0; k<125; k++) newboard[k] = board[k];
-	newboard[to[i]] = newboard[from[i]];
-	newboard[from[i]] = 0;
-	double value = -negamax(newboard, depth-1, -beta, -alpha, -player, color^1^9);
-	if (value >= beta) return value;
-	if (value >= alpha) alpha = value;
-    }
-    return alpha;
-}
-*/
-
 int AInegascout::pawnPromotion(const int*, const int &) { return 4; }
 
 double AInegascout::negascout(int * board, int depth, double alpha, double beta, int player, int color) {
