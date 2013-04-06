@@ -1,6 +1,6 @@
 CXX=g++
 CXXFLAGS = -Wall -Wextra -pedantic -g
-OFILES = chessoutput.o frontend.o AI/AIabpruning.o AI/AIrandom.o AI/AIgreedy.o AI/chessAI.o AI/chessfunctions.o AI/chessmove.o AI/AInegascout.o
+OFILES = chessoutput.o frontend.o AI/AIabpruning.o AI/AIrandom.o AI/AIgreedy.o AI/chessAI.o AI/chessfunctions.o AI/chessmove.o AI/AInegascout.o AI/Simulator.o
 .SUFFIXES: .o .cpp
 
 frontend: $(OFILES)
@@ -24,4 +24,5 @@ AIrandom.o: AI/AIrandom.cpp AI/AIrandom.h AI/chessmove.h \
 chessAI.o: AI/chessAI.cpp AI/chessAI.h AI/AIgeneric.h AI/AIrandom.h \
   AI/chessmove.h AI/chessfunctions.h AI/AIgreedy.h AI/AIabpruning.h
 chessfunctions.o: AI/chessfunctions.cpp AI/chessfunctions.h
-chessmove.o: AI/chessmove.cpp AI/chessmove.h AI/chessfunctions.h
+chessmove.o: AI/chessmove.cpp AI/chessmove.h AI/chessfunctions.h AI/Simulator.cpp AI/Simulator.h
+Simulator.o: AI/Simulator.cpp AI/Simulator.h AI/chessmove.cpp AI/chessmove.h

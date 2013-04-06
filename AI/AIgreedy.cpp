@@ -20,7 +20,7 @@ int AIgreedy::getNextMove(const int *board, const int & color){
     for (int j = 0; j < 125; j++){
 	if (board[j] >= lower && board[j] <= upper){
 	    int val = computeValue(board[j]);
-	    set<int> posmoves = getPossibleMoves(board, j);
+	    set<int> posmoves = getPossibleMoves(board, j, true);
 	    for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
 		int elem = *i;
 		int elemVal = computeValue(board[elem]);
