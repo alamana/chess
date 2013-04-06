@@ -14,15 +14,20 @@ void Simulator::setBoard(const int* array){
 	color = 2;
 	for (int i = 0; i < 125; i++){
 		board[i] = array[i];
-		if (board[i] == 6) wkingloc = i;
-		else if (board[i] == 14) bkingloc = i;
+		if (board[i] == 7) wkingloc = i;
+		else if (board[i] == 15) bkingloc = i;
 	}
 	}
 }
 
 void Simulator::simulateMove(int to, int from){
-	cout << "simulating move..." << "color =" << color;
+/*	cout << "simulating move..." << endl;
+	cout << "the piece we are moving is a " << board[from] << endl;
+	cout << "color =" << color;
 	cout << " enabled = " << enabled << endl;
+	cout << "to = " << to << " from = " << from << endl;
+	cout << "the white king is at " << wkingloc << " and the black king is at " << bkingloc << endl;
+*/
 	if (enabled){
 	int _to = board[to];
 	int _from = board[from];
@@ -36,8 +41,8 @@ void Simulator::simulateMove(int to, int from){
 	board[from] = 0;
 	
 	// did we move the king?
-	if (_from == 6) wkingloc = to;
-	else if (_from == 14) bkingloc = to;
+	if (_from == 2) wkingloc = to;
+	else if (_from == 122) bkingloc = to;
 
 	int upper, lower, kingloc;
 
@@ -54,20 +59,24 @@ void Simulator::simulateMove(int to, int from){
 
 	// check if the king is in check
 	checkState = false;
-	for (int i = 0; i < 125; i++){
-		cout << "i=" << i << endl;
+	for (int j = 0; j < 125; j++){
 		if (checkState == true) break;
-		if (lower <= board[i] && board[i] <= upper){
-			set<int> posmoves = getPossibleMoves(board,i, false); // disable checking to prevent infinite loop
+		if (lower <= board[j] && board[j] <= upper){
+			set<int> posmoves = getPossibleMoves(board,j, false); // disable checking to prevent infinite loop
 			if (!posmoves.empty()){
 				for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
 					int elem = *i;
-					if (elem == kingloc) { checkState = true; break; }
+					if (elem == kingloc) { checkState = true;
+/*						cout << "checking spot " << elem << endl;
+						cout << board[elem] << endl; 
+						break; 
+*/
+					}
 				}
 			}
 		}
 	}
-	cout << "checkState=" << checkState << endl;
+//	cout << "checkState=" << checkState << endl;
 	// reset board since this is a simulation
 	board[from] = _from;
 	board[to] = _to;

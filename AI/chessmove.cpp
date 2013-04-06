@@ -7,10 +7,7 @@ set<int> getPossibleMoves(const int* board, const int & loc, bool checkingEnable
 	Simulator sim(checkingEnabled);
 	sim.setBoard(board);
     int pos = board[loc];
-    	sim.color = 1;
-    if (pos > 8) { pos -= 8; sim.color = 9; }
-	if (checkingEnabled) { cout << "pos= " << pos << endl; cout << "color = " << sim.color << endl; }
-	cout << "pos=" << pos << endl;
+    if (pos > 8) { pos -= 8; }
     switch ( pos ) {
 	case 0:
 	    return set<int>();
@@ -52,7 +49,7 @@ set<int> getPawnMoves(const int* board, const int & loc, Simulator& sim, bool en
 	int l = locAdd(loc, sign*movelist[i][0], sign*movelist[i][1], movelist[i][2]);
 	if (l!=-1 && opponents(board[l], board[loc]) == -1){
 		if (enable) {
-			sim.simulateMove( l, loc);
+			sim.simulateMove(l, loc);
 			if (!sim.checkState) { moves.insert(l); }
 		} else {
 			moves.insert(l);
