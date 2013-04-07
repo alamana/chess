@@ -4,7 +4,11 @@
 #include "AIrandom.h"
 #include "AIgreedy.h"
 #include "AIabpruning.h"
+<<<<<<< HEAD
 #include "AIoptimized.h"
+=======
+#include "AInegascout.h"
+>>>>>>> bf769b0944482f17bdc17694ea0a47f45c835bde
 
 chessAI::chessAI () {
     // SET AIs HERE
@@ -21,9 +25,15 @@ chessAI::chessAI () {
     AIlist.push_back(abAI);
     names.push_back(abAI->name);
 
+<<<<<<< HEAD
     AIoptimized * opAI = new AIoptimized;
     AIlist.push_back(opAI);
     names.push_back(opAI->name);
+=======
+    AInegascout * nsAI = new AInegascout;
+    AIlist.push_back(nsAI);
+    names.push_back(nsAI->name);
+>>>>>>> bf769b0944482f17bdc17694ea0a47f45c835bde
 
     // FIN
     selectedAI = -1;

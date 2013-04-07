@@ -23,7 +23,7 @@ int AIrandom::getNextMove(const int* board, const int & color) {
 	}
 	srand(time(NULL));
 	n = rand()%length;
-	posmoves = getPossibleMoves(board, pieces[n]);
+	posmoves = getPossibleMoves(board, pieces[n], true);
     }
     int e = rand()%(posmoves.size());
     set<int>::iterator itr = posmoves.begin();
