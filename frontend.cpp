@@ -17,8 +17,8 @@ bool inCheck = false;
 int main() {
     // Standard starting board.
     // 1 = Pawn		5 = Unicorn
-    // 2 = Rook		6 = King
-    // 3 = Knight	7 = Queen
+    // 2 = Rook		6 = Queen
+    // 3 = Knight	7 = King
     // 4 = Bishop	0 = Empty
     // #+8 = Black pieces.
     int board[] = {

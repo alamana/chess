@@ -3,8 +3,7 @@
 #include "chessmove.h"
 
 set<int> getPossibleMoves(const int* board, const int & loc) {
-    int pos = board[loc];
-    if (pos > 8)  pos -= 8;
+    int pos = board[loc] & 7;
     switch ( pos ) {
 	case 0:
 	    return set<int>();
@@ -30,11 +29,11 @@ set<int> getPawnMoves(const int* board, const int & loc) {
     set<int> moves;
     //cout << "**" << loc << endl;
     int sign = 1;
-    int movelist[][3] = {
+    static int movelist[][3] = {
 	{1, 0, 0},
 	{0, 1, 0},
     };
-    int takelist[][3] = {
+    static int takelist[][3] = {
 	{1, 0, -1},
 	{1, 0, 1 },
 	{0, 1, 1 },
@@ -58,9 +57,9 @@ set<int> getRookMoves(const int* board, const int & loc) {
     set<int> moves;
     for (int s=-1; s<2; s+=2) {
 	for (int i=0; i<3; i++) {
-	    int b = i%3==0?1:0;
-	    int y = i%3==1?1:0;
-	    int x = i%3==2?1:0;
+	    int b = i==0?1:0;
+	    int y = i==1?1:0;
+	    int x = i==2?1:0;
 	    int l = loc;
 	    int op;
 	    do {
@@ -76,7 +75,7 @@ set<int> getRookMoves(const int* board, const int & loc) {
 
 set<int> getKnightMoves(const int* board, const int & loc) {
     set<int> moves;
-    int movelist[][3] = {
+    static int movelist[][3] = {
 	{0, 1, 2},
 	{0, -1, 2},
 	{1, 0, 2},
@@ -106,7 +105,7 @@ set<int> getKnightMoves(const int* board, const int & loc) {
 
 set<int> getBishopMoves(const int* board, const int & loc) {
     set<int> moves;
-    int movelist[][3] = {
+    static int movelist[][3] = {
 	{1, 1, 0},
 	{1, -1, 0},
 	{1, 0, 1},
@@ -136,7 +135,7 @@ set<int> getBishopMoves(const int* board, const int & loc) {
 
 set<int> getUnicornMoves(const int* board, const int & loc) {
     set<int> moves;
-    int movelist[][3] = {
+    static int movelist[][3] = {
 	{1, 1, 1},
 	{1, 1, -1},
 	{1, -1, 1},
@@ -177,15 +176,14 @@ set<int> getQueenMoves(const int* board, const int & loc) {
 
 set<int> getKingMoves(const int* board, const int & loc) {
     set<int> moves;
-    for (int s=-1; s<2; s+=2) {
-	for (int i=0; i<3; i++) {
-	    int b = i%3==0?1:0;
-	    int y = i%3==1?1:0;
-	    int x = i%3==2?1:0;
-	    int l = locAdd(loc, s*b, s*x, s*y);
-	    int op = opponents(board[loc], board[l]);
-	    if (op != 0) //if opponent is not same color
-		moves.insert(l);
+    for (int b=-1; b<=1; b++) {
+	for (int x=-1; x<=1; x++) {
+	    for (int y=-1; y<=1; y++) {
+		int l = locAdd(loc, b, x, y);
+		int op = opponents(board[loc], board[l]);
+		if (op != 0) //if opponent is not same color
+		    moves.insert(l);
+	    }
 	}
     }
     return moves;

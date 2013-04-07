@@ -7,5 +7,7 @@
 using namespace std;
 
 void printBoard(const int*, const int &, const set<int> &);
+void printBoard(const int*, const int &);
+void printBoard(const int*);
 
 #endif

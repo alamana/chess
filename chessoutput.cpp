@@ -6,6 +6,15 @@
 
 using namespace std;
 
+void printBoard(const int* board, const int & location) {
+    set<int> empty;
+    printBoard(board, location, empty);
+}
+
+void printboard( const int* board) {
+    printBoard(board, -1);
+}
+
 void printBoard(const int* board, const int & location, const set<int> & possibles) {
     string background = "\e[0;43m"; //yellow
     string black = "\e[1;30m";

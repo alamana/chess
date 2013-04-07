@@ -3,10 +3,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <memory>
 #include "AIgeneric.h"
 
 using namespace std;
+
 class chessAI {
     public:
 	chessAI();
