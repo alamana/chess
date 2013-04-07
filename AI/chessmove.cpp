@@ -3,16 +3,10 @@
 #include "chessmove.h"
 #include "Simulator.h"
 
-<<<<<<< HEAD
-set<int> getPossibleMoves(const int* board, const int & loc) {
-    int pos = board[loc] & 7;
-=======
 set<int> getPossibleMoves(const int* board, const int & loc, bool checkingEnabled) {
-	Simulator sim(checkingEnabled);
-	sim.setBoard(board);
-    int pos = board[loc];
-    if (pos > 8) { pos -= 8; }
->>>>>>> bf769b0944482f17bdc17694ea0a47f45c835bde
+    Simulator sim(checkingEnabled);
+    sim.setBoard(board);
+    int pos = board[loc] & 7;
     switch ( pos ) {
 	case 0:
 	    return set<int>();
@@ -53,23 +47,23 @@ set<int> getPawnMoves(const int* board, const int & loc, Simulator& sim, bool en
     for (int i=0; i<2; i++) {
 	int l = locAdd(loc, sign*movelist[i][0], sign*movelist[i][1], movelist[i][2]);
 	if (l!=-1 && opponents(board[l], board[loc]) == -1){
-		if (enable) {
-			sim.simulateMove(l, loc);
-			if (!sim.checkState) { moves.insert(l); }
-		} else {
-			moves.insert(l);
-		}
+	    if (enable) {
+		sim.simulateMove(l, loc);
+		if (!sim.checkState) { moves.insert(l); }
+	    } else {
+		moves.insert(l);
+	    }
 	}
     }
     for (int i=0; i<5; i++) {
 	int l = locAdd(loc, sign*takelist[i][0], sign*takelist[i][1], takelist[i][2]);
 	if (l!=-1 && opponents(board[l], board[loc]) == 1){
-		if (enable) {
-			sim.simulateMove(l, loc);
-			if (!sim.checkState) { moves.insert(l); }
-		} else {
-			moves.insert(l);
-		}
+	    if (enable) {
+		sim.simulateMove(l, loc);
+		if (!sim.checkState) { moves.insert(l); }
+	    } else {
+		moves.insert(l);
+	    }
 	}
     }
     return moves;
@@ -89,10 +83,10 @@ set<int> getRookMoves(const int* board, const int & loc, Simulator& sim, bool en
 		op = opponents(board[loc], board[l]);
 		if (op == 0 || l==-1) break; //if the piece is same color or invalid space
 		if (enable) {
-			sim.simulateMove(l, loc);
-			if (!sim.checkState) { moves.insert(l); }
+		    sim.simulateMove(l, loc);
+		    if (!sim.checkState) { moves.insert(l); }
 		} else {
-			moves.insert(l);
+		    moves.insert(l);
 		}
 	    } while(op == -1); //loop if square is empty
 	}
@@ -125,10 +119,10 @@ set<int> getKnightMoves(const int* board, const int & loc, Simulator &sim, bool 
 	    int op = opponents(board[loc], board[l]);
 	    if (!(op == 0 || l==-1)) {//if the piece isn't same color or invalid space
 		if (enable){
-			sim.simulateMove(l, loc);
-		    	if (!sim.checkState) { moves.insert(l); }
+		    sim.simulateMove(l, loc);
+		    if (!sim.checkState) { moves.insert(l); }
 		} else {
-			moves.insert(l);
+		    moves.insert(l);
 		}
 	    }
 	}
@@ -158,10 +152,10 @@ set<int> getBishopMoves(const int* board, const int & loc, Simulator& sim, bool 
 		op = opponents(board[loc], board[l]);
 		if (op == 0 || l==-1) break; //if the piece is same color or invalid space
 		if (enable){
-			sim.simulateMove(l, loc);
-			if (!sim.checkState) { moves.insert(l); }
+		    sim.simulateMove(l, loc);
+		    if (!sim.checkState) { moves.insert(l); }
 		} else {
-			moves.insert(l);
+		    moves.insert(l);
 		}
 	    } while(op == -1); //loop if square is empty
 	}
@@ -190,10 +184,10 @@ set<int> getUnicornMoves(const int* board, const int & loc, Simulator &sim, bool
 		op = opponents(board[loc], board[l]);
 		if (op == 0 || l==-1) break; //if the piece is same color or invalid space
 		if (enable) {
-			sim.simulateMove(l, loc);
-			if (!sim.checkState) { moves.insert(l); }
+		    sim.simulateMove(l, loc);
+		    if (!sim.checkState) { moves.insert(l); }
 		} else { 
-			moves.insert(l);
+		    moves.insert(l);
 		}
 	    } while(op == -1); //loop if square is empty
 	}
@@ -218,30 +212,19 @@ set<int> getQueenMoves(const int* board, const int & loc, Simulator& sim, bool e
 
 set<int> getKingMoves(const int* board, const int & loc, Simulator &sim, bool enable) {
     set<int> moves;
-<<<<<<< HEAD
     for (int b=-1; b<=1; b++) {
 	for (int x=-1; x<=1; x++) {
 	    for (int y=-1; y<=1; y++) {
 		int l = locAdd(loc, b, x, y);
 		int op = opponents(board[loc], board[l]);
-		if (op != 0) //if opponent is not same color
-		    moves.insert(l);
-=======
-    for (int s=-1; s<2; s+=2) {
-	for (int i=0; i<3; i++) {
-	    int b = i%3==0?1:0;
-	    int y = i%3==1?1:0;
-	    int x = i%3==2?1:0;
-	    int l = locAdd(loc, s*b, s*x, s*y);
-	    int op = opponents(board[loc], board[l]);
-	    if (op != 0) { //if opponent is not same color
-		if (enable) {
+		if (op != 0) { //if opponent is not same color
+		    if (enable) {
 			sim.simulateMove(l, loc);
 			if (!sim.checkState) { moves.insert(l); }
-		} else {
+		    } else {
 			moves.insert(l);
+		    }
 		}
->>>>>>> bf769b0944482f17bdc17694ea0a47f45c835bde
 	    }
 	}
     }

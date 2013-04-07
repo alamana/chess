@@ -1,6 +1,7 @@
 #include <float.h>
 #include <iostream>
 #include "AIoptimized.h"
+#include "chessmove.h"
 #include "../chessoutput.h"
 
 #define SEARCH_DEPTH 7
@@ -82,6 +83,7 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
 	    pmovelen = mover.getPossibleMoves(posmoves, board, i);
+	    set<int> ptemp = getPossibleMoves(board, i, true);
 	    for (int k=0; k<pmovelen; k++) {
 		if (posmoves[k] == -1) continue;
 		from[len] = i;
