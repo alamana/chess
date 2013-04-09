@@ -208,7 +208,7 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
 		if (board[l->value] == 0) arr[ind++] = l->value;
 		l=l->next;
 	    }
-	    l = table[1][loc][(1-c)+2];
+	    l = table[1][loc][(c)+2];
 	    while (l->value != -1) {
 		if ((board[l->value]!=0) && (
 		    (c && board[l->value] < 8) || (!c && board[l->value] > 8))) arr[ind++] = l->value;
