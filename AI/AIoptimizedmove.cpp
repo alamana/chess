@@ -198,12 +198,12 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
 	case 1:
 	{
 	    // Pawn
-	    /* table[loc][1][0] = black pawn moves
-	     *		    [1] = white pawn moves
-	     *		    [2] = black capture locs
-	     *		    [3] = white capture locs
+	    /* table[loc][1][0] = white pawn moves
+	     *		    [1] = black pawn moves
+	     *		    [2] = white capture locs
+	     *		    [3] = black capture locs
 	     */
-	    List * l = table[loc][1][1-c];
+	    List * l = table[loc][1][c];
 	    while (l->value != -1) {
 		if (board[l->value] == 0) arr[ind++] = l->value;
 		l=l->next;

@@ -9,7 +9,7 @@
 using namespace std;
 
 AIoptimized::AIoptimized() {
-    name = "Smart AI";
+    name = "Optimized AI";
     val = 0;
     //	       P   R   B   N   U   Q   K
     int v[] = {0, 10, 50, 30, 50, 40, 80, 1000};
@@ -20,9 +20,10 @@ double AIoptimized::computeValue(const int * board, int color){
     int total = 0;
     int upper = 15, lower = 9;
     if (color == 1) { upper = 7, lower = 1;}
-    for (int i=0; i<125; i++)
+    for (int i=0; i<125; i++){
 	if (board[i] >= lower && board[i] <= upper) total += valuelist[board[i]&7];
 	else total -= valuelist[board[i]&7];
+    }
     return total;
 }
 
