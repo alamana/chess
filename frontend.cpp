@@ -88,7 +88,7 @@ int main() {
     }
     bhuman = (humanity=='y') ? true : false;
     if (!bhuman) {
-	cout << "White isn't human!" << endl;
+	cout << "Black isn't human!" << endl;
 	bAI.setAI();
     }
 

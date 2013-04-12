@@ -7,6 +7,7 @@ set<int> getPossibleMoves(const int* board, const int & loc, bool checkingEnable
     Simulator sim(checkingEnabled);
     sim.setBoard(board);
     int pos = board[loc] & 7;
+    if (loc==-1) pos = 0;
     switch ( pos ) {
 	case 0:
 	    return set<int>();

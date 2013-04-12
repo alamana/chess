@@ -180,7 +180,7 @@ void AIoptimizedmove::setKingMoves(const int & loc) {
 	    for (int y=-1; y<=1; y++) {
 		if (b==0 && x==0 && y==0) continue;
 		int l = locAdd(loc, b, x, y);
-		table[loc][7][0]->insert(l);
+		if (l!=-1) table[loc][7][0]->insert(l);
 	    }
 	}
     }
@@ -189,6 +189,7 @@ void AIoptimizedmove::setKingMoves(const int & loc) {
 int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & loc) {
     // Returns the number of moves possible;
     int pos = board[loc] & 7;
+    if (loc==-1) pos = 0;
     int looks = 0;
     int ind = 0;
     int c = board[loc] > 8 ? 1 : 0; // c = 1 if black else 0
@@ -208,10 +209,9 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
 		if (board[l->value] == 0) arr[ind++] = l->value;
 		l=l->next;
 	    }
-	    l = table[1][loc][(1-c)+2];
+	    l = table[loc][1][(1-c)+2];
 	    while (l->value != -1) {
-		if ((board[l->value]!=0) && (
-		    (c && board[l->value] < 8) || (!c && board[l->value] > 8))) arr[ind++] = l->value;
+		if ((board[l->value]!=0) && ((c ^ (board[l->value] > 8)))) arr[ind++] = l->value;
 		l=l->next;
 	    }
 	    return ind;
@@ -227,8 +227,7 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
 	    // Knight
 	    List * l = table[loc][3][0];
 	    while (l->value != -1) {
-		if ((board[l->value]==0) ||
-		    (c && board[l->value] < 8) || (!c && board[l->value] > 8) ) arr[ind++] = l->value;
+		if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
 		l=l->next;
 	    }
 	    return ind;
@@ -256,8 +255,7 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
 	    // King
 	    List * l = table[loc][7][0];
 	    while (l->value != -1) {
-		if ((board[l->value]==0) ||
-		    (c && board[l->value] < 8) || (!c && board[l->value] > 8) ) arr[ind++] = l->value;
+		if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
 		l=l->next;
 	    }
 	    return ind;
@@ -266,9 +264,9 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
     for (int i=0; i<looks; i++) {
 	List * l = table[loc][pos][i];
 	while (l->value != -1) {
-	    if ((board[l->value]==0) ||
-		(c && board[l->value] < 8) || (!c && board[l->value] > 8) ) arr[ind++] = l->value;
-	    else break;
+	    if ((board[l->value]!=0) && (c ^ (board[l->value] < 8))) break;
+	    else arr[ind++] = l->value;
+	    if (c ^ (board[l->value] > 8) ) break;
 	    l=l->next;
 	}
     }

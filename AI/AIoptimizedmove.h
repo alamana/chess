@@ -3,7 +3,6 @@
 #include <iostream>
 #include <vector>
 #include <set>
-#include "List.h"
 #include "chessfunctions.h"
 using namespace std;
 
