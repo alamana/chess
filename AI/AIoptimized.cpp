@@ -25,9 +25,10 @@ double AIoptimized::computeValue(const int * board, int color){
     int total = 0;
     int upper = 15, lower = 9;
     if (color == 1) { upper = 7, lower = 1;}
-    for (int i=0; i<125; i++)
+    for (int i=0; i<125; i++){
 	if (board[i] >= lower && board[i] <= upper) total += valuelist[board[i]&7];
 	else total -= valuelist[board[i]&7];
+    }
     return total;
 }
 
@@ -80,10 +81,10 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
     //printBoard(board, -1);
     //}
     if (depth == 0) {
-	//return computeValue(board,color);
-	int compute = computeValue(board, color);
-	if (compute != ( (color==1) ? val : -val ) ) cout << compute << ' ' << ((color==1)?val:-val) << endl;
-	return (color==1) ? val : -val;
+	return computeValue(board,color);
+	//int compute = computeValue(board, color);
+	//if (compute != ( (color==1) ? val : -val ) ) cout << compute << ' ' << ((color==1)?val:-val) << endl;
+	//return (color==1) ? val : -val;
     }
     int from[200], to[200];
     int len = 0;
@@ -95,10 +96,8 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
 	    pmovelen = mover->getPossibleMoves(posmoves, board, i);
-	    //if (depth == 8) {
-		//cout << "(" << pmovelen <<") \n";
-		//printBoard(board, i);
-	    //}
+	    //cout << "(" << pmovelen <<") \n";
+	    //printBoard(board, i, set<int>(posmoves, posmoves+pmovelen));
 	    for (int k=0; k<pmovelen; k++) {
 		from[len] = i;
 		to[len++] = posmoves[k];

@@ -38,10 +38,10 @@ void AIoptimizedmove::setPossibleMoves(const int & piece, const int & loc) {
 }
 
 void AIoptimizedmove::setPawnMoves(const int & loc) {
-    /* table[1][loc][0] = white pawn moves
-     *		    [1] = black pawn moves
-     *		    [2] = white capture locs
-     *		    [3] = black capture locs
+    /* table[loc][1][0] = black pawn moves
+     *		    [1] = white pawn moves
+     *		    [2] = black capture locs
+     *		    [3] = white capture locs
      */
 
     static int movelist[][3] = {
@@ -192,74 +192,74 @@ int AIoptimizedmove::getPossibleMoves(int* arr, const int* board, const int & lo
     if (loc==-1) pos = 0;
     int looks = 0;
     int ind = 0;
-    int c = board[loc] > 8 ? 1 : 0; // c = 1 if black else 0
+    int c = board[loc] < 8 ? 1 : 0; // c = 1 if white else 0
     switch ( pos ) {
 	case 0:
 	    return 0;
 	case 1:
-	{
-	    // Pawn
-	    /* table[loc][1][0] = black pawn moves
-	     *		    [1] = white pawn moves
-	     *		    [2] = black capture locs
-	     *		    [3] = white capture locs
-	     */
-	    List * l = table[loc][1][1-c];
-	    while (l->value != -1) {
-		if (board[l->value] == 0) arr[ind++] = l->value;
-		l=l->next;
+	    {
+		// Pawn
+		/* table[loc][1][0] = black pawn moves
+		 *		    [1] = white pawn moves
+		 *		    [2] = black capture locs
+		 *		    [3] = white capture locs
+		 */
+		List * l = table[loc][1][c];
+		while (l->value != -1) {
+		    if (board[l->value] == 0) arr[ind++] = l->value;
+		    l=l->next;
+		}
+		l = table[1][loc][c+2];
+		while (l->value != -1) {
+		    if ((board[l->value]!=0) && ((c ^ (board[l->value] > 8)))) arr[ind++] = l->value;
+		    l=l->next;
+		}
+		return ind;
 	    }
-	    l = table[loc][1][(1-c)+2];
-	    while (l->value != -1) {
-		if ((board[l->value]!=0) && ((c ^ (board[l->value] > 8)))) arr[ind++] = l->value;
-		l=l->next;
-	    }
-	    return ind;
-	}
 	case 2:
-	{
-	    // Rook
-	    looks = 6;
-	    break;
-	}
+	    {
+		// Rook
+		looks = 6;
+		break;
+	    }
 	case 3:
-	{
-	    // Knight
-	    List * l = table[loc][3][0];
-	    while (l->value != -1) {
-		if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
-		l=l->next;
+	    {
+		// Knight
+		List * l = table[loc][3][0];
+		while (l->value != -1) {
+		    if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
+		    l=l->next;
+		}
+		return ind;
 	    }
-	    return ind;
-	}
 	case 4:
-	{
-	    //Bishop
-	    looks = 12;
-	    break;
-	}
-	case 5:
-	{
-	    // Unicorn
-	    looks = 8;
-	    break;
-	}
-	case 6:
-	{
-	    // Queen
-	    looks = 26;
-	    break;
-	}
-	case 7:
-	{
-	    // King
-	    List * l = table[loc][7][0];
-	    while (l->value != -1) {
-		if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
-		l=l->next;
+	    {
+		//Bishop
+		looks = 12;
+		break;
 	    }
-	    return ind;
-	}
+	case 5:
+	    {
+		// Unicorn
+		looks = 8;
+		break;
+	    }
+	case 6:
+	    {
+		// Queen
+		looks = 26;
+		break;
+	    }
+	case 7:
+	    {
+		// King
+		List * l = table[loc][7][0];
+		while (l->value != -1) {
+		    if ((board[l->value]==0) || (c ^ (board[l->value] > 8))) arr[ind++] = l->value;
+		    l=l->next;
+		}
+		return ind;
+	    }
     }
     for (int i=0; i<looks; i++) {
 	List * l = table[loc][pos][i];
