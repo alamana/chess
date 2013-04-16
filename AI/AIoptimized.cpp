@@ -4,7 +4,7 @@
 #include "chessmove.h"
 #include "../chessoutput.h"
 
-#define SEARCH_DEPTH 4
+#define SEARCH_DEPTH 5
 
 using namespace std;
 
@@ -75,14 +75,7 @@ int AIoptimized::getNextMove(const int * inboard, const int & color){
 }
 
 double AIoptimized::negamax(double alpha, double beta, int color) {
-    //if (depth > 4) {
-    //cout << depth << '\n';
-    //printBoard(board, -1);
-    //}
     if (depth == 0) {
-	//return computeValue(board,color);
-	//int compute = computeValue(board, color);
-	//if (compute != ( (color==1) ? -val : val ) ) cout << compute << ' ' << ((color==1)?-val:val) << endl;
 	return (color==1) ? -val : val;
     }
     int from[200], to[200];
@@ -91,7 +84,6 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
     int posmoves[125];
     int pmovelen;
     if (color == 1) { upper = 7; lower = 1;}
-    //cout << "\n\n\n\n\n" << color << "\n"; 
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
 	    pmovelen = mover->getPossibleMoves(posmoves, board, i);
@@ -108,19 +100,14 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
 	val += sign*valuelist[save&7];
 	board[to[i]] = board[from[i]];
 	board[from[i]] = 0;
-	//printBoard(board, to[i]);
-	//cout << color << ' ' << val << endl;
 	depth--;
 	double value = -negamax(-beta, -alpha, color^1^9);
 	depth++;
-	//cout << value << ' ' << alpha << ' ' << beta << ' ' << depth << endl;
 	board[from[i]] = board[to[i]];
 	board[to[i]] = save;
 	val -= sign*valuelist[save&7];
 	if (value >= beta) return value;
 	if (value >= alpha) alpha = value;
-	//printBoard(board, from[i]);
-	//cout << color << ' ' << val << endl;
     }
     return alpha;
 }
