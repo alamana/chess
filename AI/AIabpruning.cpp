@@ -28,7 +28,7 @@ int AIabpruning::getNextMove(const int *board, const int & color){
     if (color == 1) { upper = 7; lower = 1;}
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
-	    set<int> posmoves = getPossibleMoves(board, i, true);
+	    set<int> posmoves = getPossibleMoves(board, i, false);
 	    for (set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); itr++) {
 		if (*itr == -1) continue;
 		from[len] = i;
@@ -61,7 +61,7 @@ double AIabpruning::negamax(int * board, int depth, double alpha, double beta, i
     if (color == 1) { upper = 7; lower = 1;}
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
-	    set<int> posmoves = getPossibleMoves(board, i, true);
+	    set<int> posmoves = getPossibleMoves(board, i, false);
 	    for (set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); itr++) {
 		if (*itr == -1) continue;
 		from[len] = i;

@@ -32,7 +32,7 @@ double AIoptimized::computeValue(const int * board, int color){
     return total;
 }
 
-int AIoptimized::getNextMove(const int *board, const int & color){
+int AIoptimized::getNextMove(const int * inboard, const int & color){
     int from[200], to[200];
     int len = 0;
     int upper = 15, lower = 9;
@@ -40,51 +40,50 @@ int AIoptimized::getNextMove(const int *board, const int & color){
     int pmovelen;
     if (color == 1) { upper = 7; lower = 1;}
     for (int i=0; i<125; i++)
-	if (board[i] >= lower && board[i] <= upper) {
-	    pmovelen = mover->getPossibleMoves(posmoves, board, i);
+	if (inboard[i] >= lower && inboard[i] <= upper) {
+	    pmovelen = mover->getPossibleMoves(posmoves, inboard, i);
 	    for (int k=0; k<pmovelen; k++) {
 		from[len] = i;
 		to[len++] = posmoves[k];
 	    }
 	}
     //for (int i=0;i <len; i++) cout << from[i] << ' ' << to[i] << endl;
-    int newboard[125];
-    for (int k=0; k<125; k++) newboard[k] = board[k];
-    val = computeValue(newboard, 1);
+    for (int k=0; k<125; k++) board[k] = inboard[k];
+    val = computeValue(board, 1);
     //cout << val << endl;
     double maxvalue = -DBL_MAX;
     int maxind = 0, save = 0, sign = 1;
     for (int i=0; i<len; i++) {
-	save = newboard[to[i]];
+	save = board[to[i]];
 	sign = save > 8 ? -1 : 1;
 	val += sign*valuelist[save&7];
-	newboard[to[i]] = newboard[from[i]];
-	newboard[from[i]] = 0;
-	indextest = 0;
-	double curvalue = -negamax(newboard, SEARCH_DEPTH, -DBL_MAX, DBL_MAX, color^1^9);
+	board[to[i]] = board[from[i]];
+	board[from[i]] = 0;
+	depth = SEARCH_DEPTH;
+	double curvalue = -negamax(-DBL_MAX, DBL_MAX, color^1^9);
 	//cout << endl<<endl;
 	if (curvalue > maxvalue) {
 	    maxvalue = curvalue;
 	    maxind = i;
 	}
-	newboard[from[i]] = newboard[to[i]];
-	newboard[to[i]] = save;
+	board[from[i]] = board[to[i]];
+	board[to[i]] = save;
 	val -= sign*valuelist[save&7];
     }
     //cout << to[maxind] << ' ' << from[maxind] << ' ' << maxvalue << endl;
     return 1000*to[maxind]+from[maxind];
 }
 
-double AIoptimized::negamax(int * board, int depth, double alpha, double beta, int color) {
+double AIoptimized::negamax(double alpha, double beta, int color) {
     //if (depth > 4) {
     //cout << depth << '\n';
     //printBoard(board, -1);
     //}
     if (depth == 0) {
-	return computeValue(board,color);
+	//return computeValue(board,color);
 	//int compute = computeValue(board, color);
-	//if (compute != ( (color==1) ? val : -val ) ) cout << compute << ' ' << ((color==1)?val:-val) << endl;
-	//return (color==1) ? val : -val;
+	//if (compute != ( (color==1) ? -val : val ) ) cout << compute << ' ' << ((color==1)?-val:val) << endl;
+	return (color==1) ? -val : val;
     }
     int from[200], to[200];
     int len = 0;
@@ -96,8 +95,6 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
     for (int i=0; i<125; i++)
 	if (board[i] >= lower && board[i] <= upper) {
 	    pmovelen = mover->getPossibleMoves(posmoves, board, i);
-	    //cout << "(" << pmovelen <<") \n";
-	    //printBoard(board, i, set<int>(posmoves, posmoves+pmovelen));
 	    for (int k=0; k<pmovelen; k++) {
 		from[len] = i;
 		to[len++] = posmoves[k];
@@ -105,7 +102,7 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
 	}
     
 
-    int save = 0, sign = color == 9 ? -1 : 1;
+    int save = 0, sign = color == 1 ? -1 : 1;
     for (int i=0; i<len; i++) {
 	save = board[to[i]];
 	val += sign*valuelist[save&7];
@@ -113,7 +110,9 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
 	board[from[i]] = 0;
 	//printBoard(board, to[i]);
 	//cout << color << ' ' << val << endl;
-	double value = -negamax(board, depth-1, -beta, -alpha, color^1^9);
+	depth--;
+	double value = -negamax(-beta, -alpha, color^1^9);
+	depth++;
 	//cout << value << ' ' << alpha << ' ' << beta << ' ' << depth << endl;
 	board[from[i]] = board[to[i]];
 	board[to[i]] = save;
@@ -123,7 +122,6 @@ double AIoptimized::negamax(int * board, int depth, double alpha, double beta, i
 	//printBoard(board, from[i]);
 	//cout << color << ' ' << val << endl;
     }
-    indextest++;
     return alpha;
 }
 

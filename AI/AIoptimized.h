@@ -15,10 +15,11 @@ class AIoptimized : public AIgeneric {
 	virtual int pawnPromotion(const int*, const int &);
     private:
 	double computeValue(const int *, int);
-	double negamax(int *, int, double, double, int); 
+	double negamax(double, double, int); 
 	int valuelist[8];
 	double val;
-	int indextest;
+	int board[125];
+	int depth;
 	AIoptimizedmove * mover;
 };
 
