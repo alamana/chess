@@ -62,7 +62,7 @@ int AIoptimized::getNextMove(const int * inboard, const int & color){
 	depth = SEARCH_DEPTH;
 	double curvalue = -negamax(-DBL_MAX, DBL_MAX, color^1^9);
 	// check for pawns
-	if (rmax || bmax || umax || kmax) {
+	/*if (rmax || bmax || umax || kmax) {
 		if (rmax) { 
 			board[from[i]] = (color == 1) ? 2 : 9;
 			return 1000*to[i]+from[i]; // this will break
@@ -77,7 +77,7 @@ int AIoptimized::getNextMove(const int * inboard, const int & color){
 			return 1000*to[i]+from[i];
 		}
 	} else {
-		//cout << endl<<endl;
+	*/	//cout << endl<<endl;
 		if (curvalue > maxvalue) {
 	    		maxvalue = curvalue;
 	    		maxind = i;
@@ -124,7 +124,7 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
 	if (board[from[i]]&7 == 1){
 		int high = (color == 1) ? 4 : 124;
 		int low = (color == 1) ? 0 : 120;
-		if (low <= to[i] && t[i] <= high){
+		if (low <= to[i] /*&& t[i] <= high*/){
 			int rook = (color == 1) ? 2 : 10;
 			int bishop = (color == 1) ? 4 : 12;
 			int unicorn = (color == 1) ? 5 : 13;
@@ -137,7 +137,7 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
 			int depthSave = depth;
 			
 			// rook
-			board[to[i]] = rook
+			board[to[i]] = rook;
 			val += sign*valuelist[rook&7];
 			depth = 2;
 			double rookVal = -negamax(-beta, -alpha, color^1^9);

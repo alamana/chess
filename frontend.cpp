@@ -274,7 +274,7 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
 		{
 			int v = *itr;
-			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[v]), GTK_STATE_NORMAL, NULL);
+			gtk_widget_override_background_color(GTK_WIDGET(eventBoxes[v]), GTK_STATE_FLAG_NORMAL, NULL);
 		}
 	}
 	return TRUE;
