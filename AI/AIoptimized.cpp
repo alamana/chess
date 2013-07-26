@@ -92,10 +92,15 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
 		to[len++] = posmoves[k];
 	    }
 	}
-    
-
+    int pawnUpper = 124, pawnLower = 120, inc = 8, pawnval = 9;
+    if (color == 1) { pawnUpper = 4; pawnLower = 0; inc = 0; pawnval = 1; }
     int save = 0, sign = color == 1 ? -1 : 1;
     for (int i=0; i<len; i++) {
+	// check to see if the move is a pawn promotion
+	if ((board[from[i]] == pawnval) && (pawnLower <= to[i]) && (to[i] <= pawnUpper)) {
+	    // make the piece a bishop for now
+	    board[from[i]] = 4 + inc;
+	}
 	save = board[to[i]];
 	val += sign*valuelist[save&7];
 	board[to[i]] = board[from[i]];
@@ -113,4 +118,3 @@ double AIoptimized::negamax(double alpha, double beta, int color) {
 }
 
 int AIoptimized::pawnPromotion(const int*, const int &) { return 4; }
-

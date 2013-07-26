@@ -15,7 +15,8 @@ class AInegascout : public AIgeneric {
 	virtual int pawnPromotion(const int*, const int &);
     private:
 	double computeValue(const int *, int);
-       	double negascout(int *, int, double, double, int, int);	
+       	double negascout(int *, int, double, double, int, int);
+	int movecount;
 };
 
 #endif

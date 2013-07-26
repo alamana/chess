@@ -1,7 +1,7 @@
 #include "AIgreedy.h"
 #include "chessmove.h"
-#include <iostream>
-using namespace std;
+//#include <iostream>
+//using namespace std;
 
 
 AIgreedy::AIgreedy() {

@@ -1,13 +1,14 @@
 CXX=g++
-CXXFLAGS = -Wall -Wextra -pedantic -O2
+CXXFLAGS = -Wall -Wextra -pedantic -O2 -fpermissive `pkg-config --cflags gtk+-3.0`
 OFILES = chessoutput.o frontend.o AI/AIabpruning.o AI/AIrandom.o AI/AIgreedy.o AI/AIoptimized.o AI/AIoptimizedmove.o AI/chessAI.o AI/chessfunctions.o AI/chessmove.o AI/AInegascout.o AI/Simulator.o
+LIBS=`pkg-config --libs gtk+-3.0`
 .SUFFIXES: .o .cpp
 
 frontend: $(OFILES)
-	$(CXX) $(CXXFLAGS) $(OFILES)
+	$(CXX) $(CXXFLAGS) $(OFILES) $(LIBS)
 
 clean:
-	-rm -f AI/*.o AI/*~ *.o *~ outputfile.exe
+	-rm -f AI/*.o AI/*~ GUI/*.o GUI/*~ *.o *~ outputfile.exe
 
 AIabpruning.o: AI/AIabpruning.cpp AI/AIabpruning.h AI/AIgeneric.h \
     AI/chessmove.h AI/chessfunctions.h AI/Simulator.h
@@ -22,7 +23,6 @@ AIoptimizedmove.o: AI/AIoptimizedmove.cpp AI/AIoptimizedmove.h  \
     AI/chessfunctions.h
 AIrandom.o: AI/AIrandom.cpp AI/AIrandom.h AI/chessmove.h \
     AI/chessfunctions.h AI/Simulator.h AI/AIgeneric.h
-#bitboard.o: AI/bitboard.cpp AI/bitboard.h
 chessAI.o: AI/chessAI.cpp AI/chessAI.h AI/AIgeneric.h AI/AIrandom.h \
     AI/chessmove.h AI/chessfunctions.h AI/Simulator.h AI/AIgreedy.h \
     AI/AIabpruning.h AI/AIoptimized.h AI/AIoptimizedmove.h  \

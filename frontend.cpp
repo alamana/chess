@@ -5,6 +5,7 @@
 #include "chessoutput.h"
 #include "AI/chessmove.h"
 #include "AI/chessAI.h"
+#include <gtk/gtk.h>
 
 using namespace std;
 
@@ -12,14 +13,21 @@ int parseInput(string);
 void moveto(int*, int, int);
 bool checkConditions(int*, chessAI *, bool);
 
-int main() {
-    // Standard starting board.
-    // 1 = Pawn		5 = Unicorn
-    // 2 = Rook		6 = Queen 
-    // 3 = Knight	7 = King
-    // 4 = Bishop	0 = Empty
-    // #+8 = Black pieces.
-    int board[] = {
+void gInit(int cellSide);
+static gboolean cell_click(GtkWidget*, GdkEvent*, gpointer);
+
+GtkWidget *mainWindow;
+GtkWidget *labels[125];
+GtkWidget *eventBoxes[125];
+char names[] = {'_', 'P', 'R', 'N', 'B', 'U', 'Q', 'K'};
+
+// Standard starting board.
+// 1 = Pawn		5 = Unicorn
+// 2 = Rook		6 = Queen 
+// 3 = Knight	7 = King
+// 4 = Bishop	0 = Empty
+// #+8 = Black pieces.
+int board[] = {
 	2, 3, 7, 3, 2, //  0  1  2  3  4
 	1, 1, 1, 1, 1, //  5  6  7  8  9
 	0, 0, 0, 0, 0, // 10 11 12 13 14
@@ -49,142 +57,262 @@ int main() {
 	0, 0, 0, 0, 0,
 	9, 9, 9, 9, 9,
 	10,11,15,11,10, // 120 121 122 123 124
-    };
+};
 
-    string input;
-    string statetext[] = {
-	"Enter the location of the piece to move",
-	"Enter a location to move to",
-	"Invalid location, try again",
-    };
-    int loc   = -1;
-    int state =  0;
-    int save  = -1;
-    int color = 1; // 1 is white, 9 is black, to exploit the way
-		   // the opponents function works
-    bool error = false;
-    bool whuman = true;
-    bool bhuman = true;
+int loc   = -1;
+int state =  0;
+int save  = -1;
+int color = 1; // 1 is white, 9 is black, to exploit the way
+// the opponents function works
+bool error = false;
+bool whuman = true;
+bool bhuman = true;
 
-    // Sets AI
-    chessAI wAI;
-    chessAI bAI;
+int main(int argc, char** argv) {
+	gtk_init(&argc, &argv);
+	gInit(25);
 
-    char humanity = 0;
-    while (humanity != 'y' && humanity != 'n') {
-	cout << "Is white a human player? (y/n): ";
-	cin >> humanity;
-    }
-    whuman = (humanity=='y') ? true : false;
-    if (!whuman) {
-	cout << "White isn't human!" << endl;
-	wAI.setAI();
-    }
+	string input;
+	string statetext[] = {
+		"Enter the location of the piece to move",
+		"Enter a location to move to",
+		"Invalid location, try again",
+	};
 
-    humanity = 0;
-    while (humanity != 'y' && humanity != 'n') {
-	cout << "Is black a human player? (y/n): ";
-	cin >> humanity;
-    }
-    bhuman = (humanity=='y') ? true : false;
-    if (!bhuman) {
-	cout << "Black isn't human!" << endl;
-	bAI.setAI();
-    }
+	// Sets AI
+	chessAI wAI;
+	chessAI bAI;
 
-    //Gameloop
-    while (true) {
-	set<int> posmoves = getPossibleMoves(board, loc, true); // enable checking
-	printBoard(board, loc,posmoves);
-	if ((color==1 && whuman) || (color==9 && bhuman)) {
-	    cout << "\t" <<(color==1?"WHITE: ":"BLACK: ") << statetext[error?2:state] << ": ";
-	    cin >> input;
-	    loc = parseInput(input);
-	    error = false;
-	    switch (state) {
-		case 0:
-		    if (loc == -1 || opponents(color, board[loc]) != 0) {
-			error = true;
-		    }
-		    else {
-			state = 1;
-			save = loc;
-		    }
-		    break;
-		case 1:
-		    if (loc == -1) {
-			error = true;
-			loc = save;
-		    }
-		    else if (opponents(color, board[loc]) == 0) {
-			state = 1;
-			save = loc;
-		    }
-		    else if (posmoves.find(loc) == posmoves.end()) {
-			error = true;
-			state = 0;
-			loc = save;
-		    }
-		    else {
-			state = 0;
-			moveto(board, save, loc);
-			loc = -1;
-			save = -1;
-			//switches color between 9 and 1
+	char humanity = 0;
+	while (humanity != 'y' && humanity != 'n') {
+		cout << "Is white a human player? (y/n): ";
+		cin >> humanity;
+	}
+	whuman = (humanity=='y') ? true : false;
+	if (!whuman) {
+		cout << "White isn't human!" << endl;
+		wAI.setAI();
+	}
+
+	humanity = 0;
+	while (humanity != 'y' && humanity != 'n') {
+		cout << "Is black a human player? (y/n): ";
+		cin >> humanity;
+	}
+	bhuman = (humanity=='y') ? true : false;
+	if (!bhuman) {
+		cout << "Black isn't human!" << endl;
+		bAI.setAI();
+	}
+
+	//Gameloop
+	while (true) {
+		set<int> posmoves = getPossibleMoves(board, loc, true); // enable checking
+		printBoard(board, loc,posmoves);
+		if ((color==1 && whuman) || (color==9 && bhuman)) {
+			cout << "\t" <<(color==1?"WHITE: ":"BLACK: ") << statetext[error?2:state] << ": ";
+			cin >> input;
+			loc = parseInput(input);
+			error = false;
+			switch (state) {
+				case 0:
+					if (loc == -1 || opponents(color, board[loc]) != 0) {
+						error = true;
+					}
+					else {
+						state = 1;
+						save = loc;
+					}
+					break;
+				case 1:
+					if (loc == -1) {
+						error = true;
+						loc = save;
+					}
+					else if (opponents(color, board[loc]) == 0) {
+						state = 1;
+						save = loc;
+					}
+					else if (posmoves.find(loc) == posmoves.end()) {
+						error = true;
+						state = 0;
+						loc = save;
+					}
+					else {
+						state = 0;
+						moveto(board, save, loc);
+						loc = -1;
+						save = -1;
+						//switches color between 9 and 1
+						color = 9^1^color;
+					}
+					break;
+			}
+			if (checkConditions(board, NULL, false)) break;
+		}
+		else {
+			cout << "\t" <<(color==1?"WHITE ":"BLACK ") << "is a computer, it will move now.\n";
+			int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
+			moveto(board, computerderp%1000, computerderp/1000);
+			if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
 			color = 9^1^color;
-		    }
-		    break;
-	    }
-	    if (checkConditions(board, NULL, false)) break;
+		}
+		cout << "\n\n\n";
 	}
-	else {
-	    cout << "\t" <<(color==1?"WHITE ":"BLACK ") << "is a computer, it will move now.\n";
-	    int computerderp = (color==1) ? wAI.getNextMove(board, color) : bAI.getNextMove(board,color);
-	    moveto(board, computerderp%1000, computerderp/1000);
-	    if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
-	    color = 9^1^color;
+	cout << "\n\n";
+	printBoard(board, -1, getPossibleMoves(board, -1, true));
+
+	return 0;
+}
+
+void gInit(int cellSide)
+{
+	char buffer[10];
+	mainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 25*cellSide, 5*cellSide);
+	gtk_window_set_title(GTK_WINDOW(mainWindow), "3D Chess");
+	g_signal_connect(mainWindow, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);//gtk_hbox_new(FALSE, 10);
+	for(int b = 0; b < 5; ++b)
+	{
+		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);//gtk_vbox_new(TRUE, 10);
+		for(int row = 0; row < 5; ++row)
+		{
+			GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10); //gtk_hbox_new(TRUE, 10);
+			for(int col = 0; col < 5; ++col)
+			{
+				int index = 25*b + row*5 + col;
+				int val = board[index];
+				//printf("%d\n", (val%8));
+				snprintf(buffer, 10, "%c", names[(val%8)]);
+				GtkWidget *eventBox = gtk_event_box_new();
+				gtk_container_set_border_width(GTK_CONTAINER(eventBox), 5);
+				//gtk_event_box_set_above_child(GTK_EVENT_BOX(eventBox), TRUE);
+				//gtk_event_box_set_visible_window(GTK_EVENT_BOX(eventBox), TRUE);
+				GtkWidget *label = gtk_label_new(buffer);
+				gtk_container_add(GTK_CONTAINER(eventBox), label);
+				gtk_widget_set_events(eventBox, GDK_BUTTON_PRESS_MASK);
+				g_signal_connect(eventBox, "button_press_event", G_CALLBACK(cell_click), (gpointer) index);
+				gtk_box_pack_start(GTK_BOX(hbox), eventBox, FALSE, TRUE, 5);
+				labels[index] = label;
+				eventBoxes[index] = eventBox;
+			}
+			gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
+		}
+		gtk_box_pack_start(GTK_BOX(mainBox), vbox, FALSE, TRUE, 0);
+		GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+		gtk_box_pack_start(GTK_BOX(mainBox), sep, FALSE, TRUE, 0);
 	}
-	cout << "\n\n\n";
-    }
-    cout << "\n\n";
-    printBoard(board, -1, getPossibleMoves(board, -1, true));
-    
-    return 0;
+	gtk_container_add(GTK_CONTAINER(mainWindow), mainBox);
+	gtk_widget_show_all(mainWindow);
+	gtk_main();
+}
+
+bool parity = true;
+set<int> posmoves;
+static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
+{
+	GdkColor gcolor;
+	loc = (int) ((gint) data);
+	printf("loc=%d\n", loc);
+	if (parity)
+	{
+		// handle empty square and same color
+		if (opponents(color, board[loc]) != 1) return TRUE;
+		//printf("%d\n", loc);
+		posmoves = getPossibleMoves(board, loc, true); // enable checking
+		gdk_color_parse("red", &gcolor);
+		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
+		{
+			int v = *itr;
+			printf("%d\n", v);
+			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[v]), GTK_STATE_NORMAL, &gcolor);
+		}
+		parity = false;
+		error = false;
+	} 
+	else 
+	{
+		switch (state)
+		{
+			case 0:
+				if (opponents(color, board[loc]) != 0)
+				{
+					error = true;
+				}
+				else
+				{
+					state = 1;
+					save = loc;
+				}
+				break;
+			case 1:
+				if (opponents(color, board[loc]) == 0)
+				{
+					state = 1;
+					save = loc;
+				}
+				else if (posmoves.find(loc) == posmoves.end())
+				{
+					error = true;
+					state = 0;
+					loc = save;
+				}
+				else
+				{
+					state = 0;
+					moveto(board, save, loc);
+					loc = -1;
+					save = -1;
+					color = 9^1^color;
+				}
+				break;
+		}
+	}
+	if (error)
+	{
+		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
+		{
+			int v = *itr;
+			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[v]), GTK_STATE_NORMAL, NULL);
+		}
+	}
+	return TRUE;
 }
 
 int parseInput (string input) {
-    // Tests every possible combination of letters and checks for validity
-    if (input.size() < 3) return -1;
-    int b = input[0]-65;
-    int y = input[1]-48; //012
-    int x = input[2]-97;
-    int n = locAdd(0, b, y, x);
-    if (n != -1) return n;
-    b = input[2]-65;
-    y = input[0]-48; //201
-    x = input[1]-97;
-    n = locAdd(0, b, y, x);
-    if (n != -1) return n;
-    b = input[1]-65;
-    y = input[0]-48; //102
-    x = input[2]-97;
-    n = locAdd(0, b, y, x);
-    if (n != -1) return n;
-    b = input[1]-65;
-    y = input[2]-48; //120
-    x = input[0]-97;
-    n = locAdd(0, b, y, x);
-    if (n != -1) return n;
-    b = input[2]-65;
-    y = input[1]-48; //210
-    x = input[0]-97;
-    n = locAdd(0, b, y, x);
-    if (n != -1) return n;
-    b = input[0]-65;
-    y = input[2]-48; //021
-    x = input[1]-97;
-    n = locAdd(0, b, y, x);
-    return n;
+	// Tests every possible combination of letters and checks for validity
+	if (input.size() < 3) return -1;
+	int b = input[0]-65;
+	int y = input[1]-48; //012
+	int x = input[2]-97;
+	int n = locAdd(0, b, y, x);
+	if (n != -1) return n;
+	b = input[2]-65;
+	y = input[0]-48; //201
+	x = input[1]-97;
+	n = locAdd(0, b, y, x);
+	if (n != -1) return n;
+	b = input[1]-65;
+	y = input[0]-48; //102
+	x = input[2]-97;
+	n = locAdd(0, b, y, x);
+	if (n != -1) return n;
+	b = input[1]-65;
+	y = input[2]-48; //120
+	x = input[0]-97;
+	n = locAdd(0, b, y, x);
+	if (n != -1) return n;
+	b = input[2]-65;
+	y = input[1]-48; //210
+	x = input[0]-97;
+	n = locAdd(0, b, y, x);
+	if (n != -1) return n;
+	b = input[0]-65;
+	y = input[2]-48; //021
+	x = input[1]-97;
+	n = locAdd(0, b, y, x);
+	return n;
 }
 
 // starting positions
@@ -197,7 +325,9 @@ int wkloc = 3;
 
 
 void moveto(int* board, int from, int to) {
-   	board[to] = board[from];
+	board[to] = board[from];
+	gtk_label_set_text(GTK_LABEL(labels[from]), "_");
+	gtk_label_set_text(GTK_LABEL(labels[to]), "*");
 	board[from] = 0;
 
 	// see if a king was moved
@@ -206,41 +336,41 @@ void moveto(int* board, int from, int to) {
 }
 
 bool checkConditions(int *board, chessAI *AI, const bool nothuman) {
-    //Promote pawn
-    for (int i=0; i<5; i++)
-	if (board[i] == 9) {
-	    int piece=0;
-	    if (nothuman) piece = AI->pawnPromotion(board, 9);
-	    else while (piece < 1 || piece > 4) {
-		cout << "\n\nBlack promotion! What would you like your pawn to become?" << endl;
-		cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
-		cin >> piece;
-	    }
-	    board[i] = piece+1+8;
+	//Promote pawn
+	for (int i=0; i<5; i++)
+		if (board[i] == 9) {
+			int piece=0;
+			if (nothuman) piece = AI->pawnPromotion(board, 9);
+			else while (piece < 1 || piece > 4) {
+				cout << "\n\nBlack promotion! What would you like your pawn to become?" << endl;
+				cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
+				cin >> piece;
+			}
+			board[i] = piece+1+8;
+		}
+	for (int i=120; i<125; i++)
+		if (board[i] == 1) {
+			int piece=0;
+			if (nothuman) piece = AI->pawnPromotion(board, 1);
+			else while (piece < 1 || piece > 4) {
+				cout << "\n\nWhite promotion! What would you like your pawn to become?" << endl;
+				cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
+				cin >> piece;
+			}
+			board[i] = piece+1;
+		}
+
+
+	bool wking = false;
+	bool bking = false;
+	for (int i=0; i<125; i++) {
+		if (board[i] == 7) wking = true;
+		if (board[i] == 15) bking = true;
 	}
-    for (int i=120; i<125; i++)
-	if (board[i] == 1) {
-	    int piece=0;
-	    if (nothuman) piece = AI->pawnPromotion(board, 1);
-	    else while (piece < 1 || piece > 4) {
-		cout << "\n\nWhite promotion! What would you like your pawn to become?" << endl;
-		cout << "\t1. Rook\n\t2. Knight\n\t3. Bishop\n\t 4. Unicorn\n";
-		cin >> piece;
-	    }
-	    board[i] = piece+1;
+
+	if (!(wking&&bking)) {
+		cout << (wking?"White":"Black") << " wins!" << endl;
+		return true;
 	}
-
-
-    bool wking = false;
-    bool bking = false;
-    for (int i=0; i<125; i++) {
-	if (board[i] == 7) wking = true;
-	if (board[i] == 15) bking = true;
-    }
-
-    if (!(wking&&bking)) {
-	cout << (wking?"White":"Black") << " wins!" << endl;
-	return true;
-    }
-    return false;
+	return false;
 }

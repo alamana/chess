@@ -7,6 +7,7 @@
 
 AInegascout::AInegascout() {
     name = "Negascout AI";
+    movecount = 0;
 }
 
 double AInegascout::computeValue(const int * board, int color){
@@ -22,6 +23,7 @@ double AInegascout::computeValue(const int * board, int color){
 }
 
 int AInegascout::getNextMove(const int *board, const int & color){
+    movecount++;
     int from[200], to[200];
     int len = 0;
     int upper = 15, lower = 9;
@@ -43,13 +45,15 @@ int AInegascout::getNextMove(const int *board, const int & color){
 	for (int k=0; k<125; k++) newboard[k] = board[k];
 	newboard[to[i]] = newboard[from[i]];
 	newboard[from[i]] = 0;
-	double curvalue = -negascout(newboard, SEARCH_DEPTH, -DBL_MAX, DBL_MAX, 1, color^1^9);
+	int depth = (movecount / 5);
+	if (depth > SEARCH_DEPTH) depth = SEARCH_DEPTH;
+	double curvalue = -negascout(newboard, depth, -DBL_MAX, DBL_MAX, 1, color^1^9);
 	if (curvalue > maxvalue) {
 	    maxvalue = curvalue;
 	    maxind = i;
 	}
     }
-    //cout << to[maxind] << ' ' << from[maxind] << ' ' << maxind << endl;
+//    cout << to[maxind] << ' ' << from[maxind] << ' ' << maxind << endl;
     return 1000*to[maxind]+from[maxind];
 }
 
