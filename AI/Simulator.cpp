@@ -21,12 +21,12 @@ void Simulator::setBoard(const int* array){
 }
 
 void Simulator::simulateMove(int to, int from){
-	cout << "simulating move..." << endl;
-	cout << "the piece we are moving is a " << board[from] << endl;
-	cout << "color =" << color;
-	cout << " enabled = " << enabled << endl;
-	cout << "to = " << to << " from = " << from << endl;
-	cout << "the white king is at " << wkingloc << " and the black king is at " << bkingloc << endl;
+	//cout << "simulating move..." << endl;
+	//cout << "the piece we are moving is a " << board[from] << endl;
+	//cout << "color =" << color;
+	//cout << " enabled = " << enabled << endl;
+	//cout << "to = " << to << " from = " << from << endl;
+	//cout << "the white king is at " << wkingloc << " and the black king is at " << bkingloc << endl;
 
 	if (enabled){
 	int _to = board[to];
@@ -64,22 +64,22 @@ void Simulator::simulateMove(int to, int from){
 		if (lower <= board[j] && board[j] <= upper){
 			set<int> posmoves = getPossibleMoves(board,j, false); // disable checking to prevent infinite loop
 			if (!posmoves.empty()){
-				cout << "looking at a " << board[j] << endl;
+				//cout << "looking at a " << board[j] << endl;
 				for (set<int>::iterator i = posmoves.begin(); i != posmoves.end(); i++){
 					int elem = *i;
 					if (elem == kingloc) { checkState = true;
-						cout << "checking spot " << elem << endl;
-						cout << board[elem] << endl; 
+						//cout << "checking spot " << elem << endl;
+						//cout << board[elem] << endl; 
 						break; 
 
 					}
 				}
 			} else {
-				cout << "posmoves is empty" << endl;
+				//cout << "posmoves is empty" << endl;
 			}
 		}
 	}
-	cout << "checkState=" << checkState << endl;
+	//cout << "checkState=" << checkState << endl;
 	// reset board since this is a simulation
 	board[from] = _from;
 	board[to] = _to;

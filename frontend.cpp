@@ -15,6 +15,7 @@ bool checkConditions(int*, chessAI *, bool);
 
 void gInit(int cellSide);
 static gboolean cell_click(GtkWidget*, GdkEvent*, gpointer);
+void uncolor(set<int>&);
 
 GtkWidget *mainWindow;
 GtkWidget *labels[125];
@@ -71,6 +72,7 @@ bool bhuman = true;
 int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);
 	gInit(25);
+	gtk_main();
 
 	string input;
 	string statetext[] = {
@@ -205,79 +207,84 @@ void gInit(int cellSide)
 	}
 	gtk_container_add(GTK_CONTAINER(mainWindow), mainBox);
 	gtk_widget_show_all(mainWindow);
-	gtk_main();
 }
 
 bool parity = true;
 set<int> posmoves;
 static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 {
+	printf("---------------\n");
 	GdkColor gcolor;
 	loc = (int) ((gint) data);
 	printf("loc=%d\n", loc);
+	printf("color=%d\n", color);
+	/* parity = true, click to select a cell */
+	/* get possible moves and color them, unless the cell is empty or an opponents */
 	if (parity)
 	{
-		// handle empty square and same color
-		if (opponents(color, board[loc]) != 1) return TRUE;
-		//printf("%d\n", loc);
-		posmoves = getPossibleMoves(board, loc, true); // enable checking
+		if (opponents(color, board[loc]) != 0) return TRUE;
+		/* color the square that was clicked */
+		gdk_color_parse("green", &gcolor);
+		gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[loc]), GTK_STATE_NORMAL, &gcolor);
+		/* Get set of possible moves and color them */
+		posmoves = getPossibleMoves(board, loc, true);
 		gdk_color_parse("red", &gcolor);
 		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
 		{
-			int v = *itr;
-			printf("%d\n", v);
-			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[v]), GTK_STATE_NORMAL, &gcolor);
+			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, &gcolor);
 		}
+		save = loc;
 		parity = false;
-		error = false;
-	} 
-	else 
-	{
-		switch (state)
-		{
-			case 0:
-				if (opponents(color, board[loc]) != 0)
-				{
-					error = true;
-				}
-				else
-				{
-					state = 1;
-					save = loc;
-				}
-				break;
-			case 1:
-				if (opponents(color, board[loc]) == 0)
-				{
-					state = 1;
-					save = loc;
-				}
-				else if (posmoves.find(loc) == posmoves.end())
-				{
-					error = true;
-					state = 0;
-					loc = save;
-				}
-				else
-				{
-					state = 0;
-					moveto(board, save, loc);
-					loc = -1;
-					save = -1;
-					color = 9^1^color;
-				}
-				break;
-		}
 	}
-	if (error)
+	else
 	{
-		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
+		printf("entering else\n");
+		/* check to see if the second cell clicked is a valid click */
+		if (opponents(color, board[loc]) == 0)
 		{
-			int v = *itr;
-			gtk_widget_override_background_color(GTK_WIDGET(eventBoxes[v]), GTK_STATE_FLAG_NORMAL, NULL);
+			printf("opponents(color, board[loc]) == 0\n");
+			uncolor(posmoves);
+			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[save]), GTK_STATE_NORMAL, NULL);	
+			posmoves = getPossibleMoves(board, loc, true);
+			gdk_color_parse("green", &gcolor);
+			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[loc]), GTK_STATE_NORMAL, &gcolor);
+			gdk_color_parse("red", &gcolor);
+			for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
+			{
+				gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, &gcolor);
+			}
+			save = loc;
+			parity = false;
+		}
+		else 
+		{
+			printf("entering second else\n");
+			set<int> moveset = getPossibleMoves(board, save, true);
+			if (moveset.find(loc) == moveset.end())
+			{
+				/* restore loc and do nothing */
+				loc = save;
+				parity = false;
+			}
+			else
+			{
+				uncolor(posmoves);
+				gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[save]), GTK_STATE_NORMAL, NULL);
+				color = 9^1^color;
+				moveto(board, save, loc);
+				parity = true;
+			}
 		}
 	}
 	return TRUE;
+}
+
+void uncolor(set<int> &Set)
+{
+	for (std::set<int>::iterator itr = Set.begin(); itr != Set.end(); ++itr)
+	{
+		gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, NULL);
+	}
 }
 
 int parseInput (string input) {
@@ -326,8 +333,8 @@ int wkloc = 3;
 
 void moveto(int* board, int from, int to) {
 	board[to] = board[from];
+	gtk_label_set_text(GTK_LABEL(labels[to]), gtk_label_get_text(GTK_LABEL(labels[from])));
 	gtk_label_set_text(GTK_LABEL(labels[from]), "_");
-	gtk_label_set_text(GTK_LABEL(labels[to]), "*");
 	board[from] = 0;
 
 	// see if a king was moved
