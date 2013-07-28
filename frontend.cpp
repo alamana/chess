@@ -71,7 +71,7 @@ bool bhuman = true;
 
 int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);
-	gInit(25);
+	gInit(40);
 	gtk_main();
 
 	string input;
@@ -169,6 +169,11 @@ int main(int argc, char** argv) {
 
 void gInit(int cellSide)
 {
+	//GtkCssProvider *gcp = gtk_css_provider_get_default();
+	//GError *gerror;
+	//GFile *gfile = g_file_new_for_path("./style.css");
+	//gtk_css_provider_load_from_file(gcp, gfile, &gerror);
+	//if (gerror == NULL) printf("gerror is NULL\n");
 	char buffer[10];
 	mainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 25*cellSide, 5*cellSide);
@@ -177,10 +182,11 @@ void gInit(int cellSide)
 	GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);//gtk_hbox_new(FALSE, 10);
 	for(int b = 0; b < 5; ++b)
 	{
-		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);//gtk_vbox_new(TRUE, 10);
+		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);//gtk_vbox_new(TRUE, 10);
+		bool flag = true;
 		for(int row = 0; row < 5; ++row)
 		{
-			GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10); //gtk_hbox_new(TRUE, 10);
+			GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); //gtk_hbox_new(TRUE, 10);
 			for(int col = 0; col < 5; ++col)
 			{
 				int index = 25*b + row*5 + col;
@@ -188,14 +194,19 @@ void gInit(int cellSide)
 				//printf("%d\n", (val%8));
 				snprintf(buffer, 10, "%c", names[(val%8)]);
 				GtkWidget *eventBox = gtk_event_box_new();
-				gtk_container_set_border_width(GTK_CONTAINER(eventBox), 5);
+				gtk_widget_set_size_request(eventBox, cellSide, cellSide);
+				GdkColor c;
+				gdk_color_parse((flag) ? "#F8F8FF" : "light gray", &c);
+				flag = !flag;
+				gtk_widget_modify_bg(eventBox, GTK_STATE_NORMAL, &c);
+				//gtk_container_set_border_width(GTK_CONTAINER(eventBox), 5);
 				//gtk_event_box_set_above_child(GTK_EVENT_BOX(eventBox), TRUE);
 				//gtk_event_box_set_visible_window(GTK_EVENT_BOX(eventBox), TRUE);
 				GtkWidget *label = gtk_label_new(buffer);
 				gtk_container_add(GTK_CONTAINER(eventBox), label);
 				gtk_widget_set_events(eventBox, GDK_BUTTON_PRESS_MASK);
 				g_signal_connect(eventBox, "button_press_event", G_CALLBACK(cell_click), (gpointer) index);
-				gtk_box_pack_start(GTK_BOX(hbox), eventBox, FALSE, TRUE, 5);
+				gtk_box_pack_start(GTK_BOX(hbox), eventBox, FALSE, TRUE, 0);
 				labels[index] = label;
 				eventBoxes[index] = eventBox;
 			}
