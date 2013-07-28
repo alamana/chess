@@ -16,11 +16,14 @@ bool checkConditions(int*, chessAI *, bool);
 void gInit(int cellSide);
 static gboolean cell_click(GtkWidget*, GdkEvent*, gpointer);
 void uncolor(set<int>&);
+void fillCell(GtkWidget*, GtkWidget*, int);
+void fill_cell_bg(GtkWidget*, int);
+void fill_cell_text(GtkWidget*, int);
 
 GtkWidget *mainWindow;
 GtkWidget *labels[125];
 GtkWidget *eventBoxes[125];
-char names[] = {'_', 'P', 'R', 'N', 'B', 'U', 'Q', 'K'};
+char names[] = {' ', 'P', 'R', 'N', 'B', 'U', 'Q', 'K'};
 
 // Standard starting board.
 // 1 = Pawn		5 = Unicorn
@@ -73,7 +76,7 @@ int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);
 	gInit(40);
 	gtk_main();
-
+	
 	string input;
 	string statetext[] = {
 		"Enter the location of the piece to move",
@@ -167,42 +170,50 @@ int main(int argc, char** argv) {
 	return 0;
 }
 
+void fillCell(GtkWidget *label, GtkWidget *eventBox, int index)
+{
+	fill_cell_bg(eventBox, index);
+	fill_cell_text(label, index);
+}
+
+void fill_cell_text(GtkWidget *label, int index)
+{
+	char buffer[10];
+	int val = board[index];
+	snprintf(buffer, 10, "%c", names[(val%8)]);
+	char *tcolor = (board[index] > 8) ? "#000000" : "#FFFFFF";
+	char *markup = g_markup_printf_escaped("<span face='roman' size='x-large' weight=\"heavy\" foreground=\"%s\">%s</span>", tcolor, buffer);
+	gtk_label_set_markup(GTK_LABEL(label), markup);
+	g_free(markup);
+}
+
+void fill_cell_bg(GtkWidget *eventBox, int index)
+{
+	GdkColor c;
+	gdk_color_parse(((index%25)%2) ? "#f0dab5" : "#b58763", &c);
+	gtk_widget_modify_bg(eventBox, GTK_STATE_NORMAL, &c);
+}
+
 void gInit(int cellSide)
 {
-	//GtkCssProvider *gcp = gtk_css_provider_get_default();
-	//GError *gerror;
-	//GFile *gfile = g_file_new_for_path("./style.css");
-	//gtk_css_provider_load_from_file(gcp, gfile, &gerror);
-	//if (gerror == NULL) printf("gerror is NULL\n");
-	char buffer[10];
 	mainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 25*cellSide, 5*cellSide);
 	gtk_window_set_title(GTK_WINDOW(mainWindow), "3D Chess");
 	g_signal_connect(mainWindow, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
-	GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);//gtk_hbox_new(FALSE, 10);
+	GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 	for(int b = 0; b < 5; ++b)
 	{
-		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);//gtk_vbox_new(TRUE, 10);
-		bool flag = true;
+		GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 		for(int row = 0; row < 5; ++row)
 		{
-			GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0); //gtk_hbox_new(TRUE, 10);
+			GtkWidget *hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 			for(int col = 0; col < 5; ++col)
 			{
 				int index = 25*b + row*5 + col;
-				int val = board[index];
-				//printf("%d\n", (val%8));
-				snprintf(buffer, 10, "%c", names[(val%8)]);
 				GtkWidget *eventBox = gtk_event_box_new();
 				gtk_widget_set_size_request(eventBox, cellSide, cellSide);
-				GdkColor c;
-				gdk_color_parse((flag) ? "#F8F8FF" : "light gray", &c);
-				flag = !flag;
-				gtk_widget_modify_bg(eventBox, GTK_STATE_NORMAL, &c);
-				//gtk_container_set_border_width(GTK_CONTAINER(eventBox), 5);
-				//gtk_event_box_set_above_child(GTK_EVENT_BOX(eventBox), TRUE);
-				//gtk_event_box_set_visible_window(GTK_EVENT_BOX(eventBox), TRUE);
-				GtkWidget *label = gtk_label_new(buffer);
+				GtkWidget *label = gtk_label_new(NULL);
+				fillCell(label, eventBox, index);
 				gtk_container_add(GTK_CONTAINER(eventBox), label);
 				gtk_widget_set_events(eventBox, GDK_BUTTON_PRESS_MASK);
 				g_signal_connect(eventBox, "button_press_event", G_CALLBACK(cell_click), (gpointer) index);
@@ -213,8 +224,11 @@ void gInit(int cellSide)
 			gtk_box_pack_start(GTK_BOX(vbox), hbox, FALSE, TRUE, 0);
 		}
 		gtk_box_pack_start(GTK_BOX(mainBox), vbox, FALSE, TRUE, 0);
-		GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
-		gtk_box_pack_start(GTK_BOX(mainBox), sep, FALSE, TRUE, 0);
+		if (b < 4)
+		{
+			GtkWidget *sep = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+			gtk_box_pack_start(GTK_BOX(mainBox), sep, FALSE, TRUE, 0);
+		}
 	}
 	gtk_container_add(GTK_CONTAINER(mainWindow), mainBox);
 	gtk_widget_show_all(mainWindow);
@@ -255,7 +269,7 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 		{
 			printf("opponents(color, board[loc]) == 0\n");
 			uncolor(posmoves);
-			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[save]), GTK_STATE_NORMAL, NULL);	
+			fill_cell_bg(eventBoxes[save], save);
 			posmoves = getPossibleMoves(board, loc, true);
 			gdk_color_parse("green", &gcolor);
 			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[loc]), GTK_STATE_NORMAL, &gcolor);
@@ -273,14 +287,16 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 			set<int> moveset = getPossibleMoves(board, save, true);
 			if (moveset.find(loc) == moveset.end())
 			{
+				printf("restoring\n");
 				/* restore loc and do nothing */
 				loc = save;
 				parity = false;
 			}
 			else
 			{
+				printf("uncoloring\n");
 				uncolor(posmoves);
-				gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[save]), GTK_STATE_NORMAL, NULL);
+				fill_cell_bg(eventBoxes[save], save);
 				color = 9^1^color;
 				moveto(board, save, loc);
 				parity = true;
@@ -294,7 +310,8 @@ void uncolor(set<int> &Set)
 {
 	for (std::set<int>::iterator itr = Set.begin(); itr != Set.end(); ++itr)
 	{
-		gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, NULL);
+		int v = *itr;
+		fill_cell_bg(eventBoxes[v], v);
 	}
 }
 
@@ -341,12 +358,11 @@ int wkloc = 3;
 //  0 = valid move, no check resulting from it
 //  1 = valid move, oppenent is in check from it
 
-
 void moveto(int* board, int from, int to) {
 	board[to] = board[from];
-	gtk_label_set_text(GTK_LABEL(labels[to]), gtk_label_get_text(GTK_LABEL(labels[from])));
-	gtk_label_set_text(GTK_LABEL(labels[from]), "_");
 	board[from] = 0;
+	fill_cell_text(labels[to], to);
+	fill_cell_text(labels[from], from);
 
 	// see if a king was moved
 	if (from == bkloc) bkloc = to;
