@@ -14,15 +14,19 @@ void moveto(int*, int, int);
 bool checkConditions(int*, chessAI *, bool);
 
 void gInit(int cellSide);
+void gPreInit();
 static gboolean cell_click(GtkWidget*, GdkEvent*, gpointer);
 void uncolor(set<int>&);
 void fillCell(GtkWidget*, GtkWidget*, int);
 void fill_cell_bg(GtkWidget*, int);
 void fill_cell_text(GtkWidget*, int);
+static gboolean checkbox_click(GtkWidget*, GdkEvent*, gpointer);
+static gboolean confirm_click();
 
 GtkWidget *mainWindow;
 GtkWidget *labels[125];
 GtkWidget *eventBoxes[125];
+GtkWidget *whiteAIComboBox, *blackAIComboBox, *introWindow, *whiteAIButton, *blackAIButton;
 char names[] = {' ', 'P', 'R', 'N', 'B', 'U', 'Q', 'K'};
 
 // Standard starting board.
@@ -72,21 +76,22 @@ bool error = false;
 bool whuman = true;
 bool bhuman = true;
 
+// Sets AI
+chessAI wAI;
+chessAI bAI;
+
 int main(int argc, char** argv) {
 	gtk_init(&argc, &argv);
-	gInit(40);
+	gPreInit();
+	//gInit(40);
 	gtk_main();
-	
+
 	string input;
 	string statetext[] = {
 		"Enter the location of the piece to move",
 		"Enter a location to move to",
 		"Invalid location, try again",
 	};
-
-	// Sets AI
-	chessAI wAI;
-	chessAI bAI;
 
 	char humanity = 0;
 	while (humanity != 'y' && humanity != 'n') {
@@ -181,7 +186,7 @@ void fill_cell_text(GtkWidget *label, int index)
 	char buffer[10];
 	int val = board[index];
 	snprintf(buffer, 10, "%c", names[(val%8)]);
-	char *tcolor = (board[index] > 8) ? "#000000" : "#FFFFFF";
+	const char *tcolor = (board[index] > 8) ? "#000000" : "#FFFFFF";
 	char *markup = g_markup_printf_escaped("<span face='roman' size='x-large' weight=\"heavy\" foreground=\"%s\">%s</span>", tcolor, buffer);
 	gtk_label_set_markup(GTK_LABEL(label), markup);
 	g_free(markup);
@@ -194,11 +199,89 @@ void fill_cell_bg(GtkWidget *eventBox, int index)
 	gtk_widget_modify_bg(eventBox, GTK_STATE_NORMAL, &c);
 }
 
+static gboolean checkbox_click(GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	//printf("%p\n", (GtkWidget*) data);
+	//printf("%p\n", data);
+	//printf("%p\n", (GtkWidget*) widget);
+	//printf("%p\n", widget);
+	//printf("%p\n", (GtkWidget*) event);
+	//printf("%p\n", event);
+	/* this shouldn't be the case...but it is. No idea why */
+	//printf("%d\n", gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	gtk_widget_set_sensitive((GtkWidget*) event, gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
+	return TRUE;
+}
+
+static gboolean confirm_click()
+{
+	if (gtk_widget_get_sensitive(whiteAIComboBox))
+	{
+		int whiteAIval = (int) gtk_combo_box_get_active(GTK_COMBO_BOX(whiteAIComboBox));
+		printf("whiteAIval = %d\n", whiteAIval);
+		if (whiteAIval == -1) return TRUE;
+		wAI.setAI(whiteAIval);
+
+	}
+	if (gtk_widget_get_sensitive(blackAIComboBox))
+	{
+		int blackAIval = (int) gtk_combo_box_get_active(GTK_COMBO_BOX(blackAIComboBox));
+		printf("blackAIval = %d\n", blackAIval);
+		if (blackAIval == -1) return TRUE;
+		bAI.setAI(blackAIval);
+	}
+	gtk_widget_set_visible(introWindow, FALSE);
+	gtk_widget_show_all(mainWindow);
+	return TRUE;
+}
+
+void gPreInit()
+{
+	gInit(40);
+	introWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	g_signal_connect(introWindow, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
+	//gtk_window_set_default_size(GTK_WINDOW(introWindow), 100, 100);
+	gtk_window_set_position(GTK_WINDOW(introWindow), GTK_WIN_POS_CENTER);
+	gtk_window_set_title(GTK_WINDOW(introWindow), "3D Chess");	
+	//gtk_window_set_resizable(GTK_WINDOW(introWindow), false);
+
+	GtkWidget *grid = gtk_grid_new();
+	whiteAIButton = gtk_check_button_new_with_label("White AI");
+	blackAIButton = gtk_check_button_new_with_label("Black AI");
+	whiteAIComboBox = gtk_combo_box_text_new();
+	//printf("%p\n", whiteAIButton);
+	g_signal_connect(whiteAIButton, "toggled", G_CALLBACK(checkbox_click), (gpointer) whiteAIComboBox);
+	blackAIComboBox = gtk_combo_box_text_new();
+	g_signal_connect(blackAIButton, "toggled", G_CALLBACK(checkbox_click), (gpointer) blackAIComboBox);
+	gtk_widget_set_sensitive(whiteAIComboBox, false);
+	gtk_widget_set_sensitive(blackAIComboBox, false);
+	vector<string> AINames = wAI.getAIList();
+	for (int i = 0; i < AINames.size(); ++i)
+	{
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(whiteAIComboBox), AINames[i].c_str()); 
+		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(blackAIComboBox), AINames[i].c_str());	
+	}
+	gtk_combo_box_set_active(GTK_COMBO_BOX(whiteAIComboBox), 0);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(blackAIComboBox), 0);
+
+	GtkWidget *button = gtk_button_new_with_label("Confirm");
+	g_signal_connect(button, "clicked", G_CALLBACK(confirm_click), NULL);
+	gtk_grid_attach(GTK_GRID(grid), button, 0, 180, 10, 90);
+	gtk_grid_attach(GTK_GRID(grid), whiteAIButton, 0, 0, 10, 90);
+	gtk_grid_attach(GTK_GRID(grid), blackAIButton, 0, 90, 10, 90);
+	gtk_grid_attach_next_to(GTK_GRID(grid), whiteAIComboBox, whiteAIButton, GTK_POS_RIGHT, 10, 90);
+	gtk_grid_attach_next_to(GTK_GRID(grid), blackAIComboBox, blackAIButton, GTK_POS_RIGHT, 10, 90);
+	gtk_container_add(GTK_CONTAINER(introWindow), grid);
+	gtk_widget_show_all(introWindow);
+	//printf("%p\n", whiteAIComboBox);
+}
+
 void gInit(int cellSide)
 {
 	mainWindow = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_default_size(GTK_WINDOW(mainWindow), 25*cellSide, 5*cellSide);
 	gtk_window_set_title(GTK_WINDOW(mainWindow), "3D Chess");
+	gtk_window_set_resizable(GTK_WINDOW(mainWindow), false);
 	g_signal_connect(mainWindow, "delete-event", G_CALLBACK(gtk_main_quit), NULL);
 	GtkWidget *mainBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 	for(int b = 0; b < 5; ++b)
@@ -231,7 +314,8 @@ void gInit(int cellSide)
 		}
 	}
 	gtk_container_add(GTK_CONTAINER(mainWindow), mainBox);
-	gtk_widget_show_all(mainWindow);
+	//gtk_widget_set_visible(mainWindow, FALSE);
+	//gtk_widget_show_all(mainWindow);
 }
 
 bool parity = true;
@@ -272,11 +356,13 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 			fill_cell_bg(eventBoxes[save], save);
 			posmoves = getPossibleMoves(board, loc, true);
 			gdk_color_parse("green", &gcolor);
+			printf("loc=%d\n", loc);
 			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[loc]), GTK_STATE_NORMAL, &gcolor);
 			gdk_color_parse("red", &gcolor);
 			for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
 			{
-				gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, &gcolor);
+				if (*itr != -1)
+					gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, &gcolor);
 			}
 			save = loc;
 			parity = false;

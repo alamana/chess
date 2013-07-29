@@ -54,6 +54,16 @@ void chessAI::setAI() {
     selectedAI = x-1;
 }
 
+vector<string> chessAI::getAIList()
+{
+	return names;
+}
+
+void chessAI::setAI(int n)
+{
+	selectedAI = n;
+}
+
 int chessAI::getNextMove(int * board, const int & color) {
     return AIlist[selectedAI]->getNextMove(board, color);
 }

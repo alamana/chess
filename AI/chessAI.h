@@ -14,6 +14,8 @@ class chessAI {
 	void setAI();
 	int getNextMove(int*, const int &);
 	int pawnPromotion(int *, const int &);
+	vector<string> getAIList();
+	void setAI(int);
     private:
 	vector<AIgeneric*> AIlist;
 	vector<string> names;
