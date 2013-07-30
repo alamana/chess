@@ -23,6 +23,7 @@ void fill_cell_text(GtkWidget*, int);
 static gboolean checkbox_click(GtkWidget*, GdkEvent*, gpointer);
 static gboolean confirm_click();
 static gboolean make_ai_first_move(gpointer);
+static gboolean make_ai_move();
 
 GtkWidget *mainWindow;
 GtkWidget *labels[125];
@@ -254,7 +255,29 @@ static gboolean make_ai_first_move(gpointer data)
 		//if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
 		color = 9^1^color;
 	}
+	if (!whuman && !bhuman)
+	{
+		printf("setting new timeout\n");
+		g_timeout_add(500, make_ai_move, NULL);
+	}
 	return FALSE;
+}
+
+bool ableToMove = true;
+static gboolean make_ai_move()
+{
+	if (ableToMove)
+	{
+		ableToMove = false;
+		printf("in make ai move\n");
+		chessAI *ai = (color == 1) ? &wAI : &bAI;
+		int computerderp = ai->getNextMove(board, color);
+		moveto(board, computerderp%1000, computerderp/1000);
+		//if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
+		color = 9^1^color;
+	}
+	ableToMove = true;
+	return TRUE;
 }
 
 void gPreInit()
