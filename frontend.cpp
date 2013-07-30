@@ -22,6 +22,7 @@ void fill_cell_bg(GtkWidget*, int);
 void fill_cell_text(GtkWidget*, int);
 static gboolean checkbox_click(GtkWidget*, GdkEvent*, gpointer);
 static gboolean confirm_click();
+static gboolean make_ai_first_move(gpointer);
 
 GtkWidget *mainWindow;
 GtkWidget *labels[125];
@@ -221,6 +222,7 @@ static gboolean confirm_click()
 		printf("whiteAIval = %d\n", whiteAIval);
 		if (whiteAIval == -1) return TRUE;
 		wAI.setAI(whiteAIval);
+		whuman = false;
 
 	}
 	if (gtk_widget_get_sensitive(blackAIComboBox))
@@ -229,10 +231,30 @@ static gboolean confirm_click()
 		printf("blackAIval = %d\n", blackAIval);
 		if (blackAIval == -1) return TRUE;
 		bAI.setAI(blackAIval);
+		bhuman = false;
 	}
 	gtk_widget_set_visible(introWindow, FALSE);
 	gtk_widget_show_all(mainWindow);
+	if (!whuman)
+	{
+		//make the first move after 1 second 
+		g_timeout_add(1000, make_ai_first_move, (gpointer) 1);
+	}
 	return TRUE;
+}
+
+static gboolean make_ai_first_move(gpointer data)
+{
+	int ai = (int) ((gint)data);
+	printf("%d\n", ai);
+	if (ai == 1)
+	{
+		int computerderp = wAI.getNextMove(board, color);
+		moveto(board, computerderp%1000, computerderp/1000);
+		//if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
+		color = 9^1^color;
+	}
+	return FALSE;
 }
 
 void gPreInit()
@@ -243,7 +265,7 @@ void gPreInit()
 	//gtk_window_set_default_size(GTK_WINDOW(introWindow), 100, 100);
 	gtk_window_set_position(GTK_WINDOW(introWindow), GTK_WIN_POS_CENTER);
 	gtk_window_set_title(GTK_WINDOW(introWindow), "3D Chess");	
-	//gtk_window_set_resizable(GTK_WINDOW(introWindow), false);
+	gtk_window_set_resizable(GTK_WINDOW(introWindow), false);
 
 	GtkWidget *grid = gtk_grid_new();
 	whiteAIButton = gtk_check_button_new_with_label("White AI");
@@ -256,7 +278,7 @@ void gPreInit()
 	gtk_widget_set_sensitive(whiteAIComboBox, false);
 	gtk_widget_set_sensitive(blackAIComboBox, false);
 	vector<string> AINames = wAI.getAIList();
-	for (int i = 0; i < AINames.size(); ++i)
+	for (unsigned int i = 0; i < AINames.size(); ++i)
 	{
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(whiteAIComboBox), AINames[i].c_str()); 
 		gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(blackAIComboBox), AINames[i].c_str());	
@@ -324,7 +346,7 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 {
 	printf("---------------\n");
 	GdkColor gcolor;
-	loc = (int) ((gint) data);
+	loc = (int) ((gint)data);
 	printf("loc=%d\n", loc);
 	printf("color=%d\n", color);
 	/* parity = true, click to select a cell */
@@ -340,6 +362,7 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 		gdk_color_parse("red", &gcolor);
 		for (std::set<int>::iterator itr = posmoves.begin(); itr != posmoves.end(); ++itr)
 		{
+			//printf("itr=%d\n", *itr);
 			gtk_widget_modify_bg(GTK_WIDGET(eventBoxes[*itr]), GTK_STATE_NORMAL, &gcolor);
 		}
 		save = loc;
@@ -389,6 +412,14 @@ static gboolean cell_click(GtkWidget *w, GdkEvent *e, gpointer data)
 			}
 		}
 	}
+	if ((color == 1) ? !whuman : !bhuman)
+	{
+		chessAI *ai = (color == 1) ? &wAI : &bAI;
+		int computerderp = ai->getNextMove(board, color);
+		moveto(board, computerderp%1000, computerderp/1000);
+		//if (checkConditions(board, color==9?(&bAI):(&wAI), true)) break;
+		color = 9^1^color;
+	}
 	return TRUE;
 }
 
@@ -397,7 +428,8 @@ void uncolor(set<int> &Set)
 	for (std::set<int>::iterator itr = Set.begin(); itr != Set.end(); ++itr)
 	{
 		int v = *itr;
-		fill_cell_bg(eventBoxes[v], v);
+		if (v != -1)
+			fill_cell_bg(eventBoxes[v], v);
 	}
 }
 
